@@ -1,89 +1,320 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AllTheRooms.ai — Coming Soon</title>
-  <meta name="description" content="AllTheRooms.ai is coming soon.">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="AllTheRooms — the open network for short-term rentals." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>AllTheRooms — Own your stay</title>
   <style>
     :root {
-      color-scheme: dark;
-      --ink: #f6f4ef;
-      --muted: #aaa69d;
-      --accent: #a7f3d0;
-      --panel: rgba(255,255,255,.06);
+      --ink: #16261f;
+      --muted: #66736c;
+      --cream: #f7f3ea;
+      --paper: #fffdf8;
+      --green: #146b50;
+      --green-dark: #0d4938;
+      --mint: #d9efe2;
+      --lime: #d9f27c;
+      --coral: #ff795f;
+      --gold: #f2c96d;
+      --line: rgba(22, 38, 31, .13);
+      --shadow: 0 24px 70px rgba(32, 60, 47, .12);
     }
+
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 15% 15%, rgba(16,185,129,.2), transparent 34rem),
-        radial-gradient(circle at 85% 80%, rgba(59,130,246,.16), transparent 32rem),
-        #0a0b0d;
       color: var(--ink);
+      background: var(--cream);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
-    main {
-      width: min(92vw, 760px);
-      padding: clamp(2rem, 6vw, 5rem);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 28px;
-      background: var(--panel);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 30px 90px rgba(0,0,0,.35);
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+
+    .shell { width: min(1180px, calc(100% - 40px)); margin: auto; }
+    .nav {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 850; letter-spacing: -.04em; font-size: 20px; }
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: 11px; background: var(--green);
+      display: grid; place-items: center; color: white; font-size: 18px; transform: rotate(-5deg);
+    }
+    .brand-mark span { transform: rotate(5deg); }
+    .nav-links { display: flex; gap: 28px; align-items: center; color: #425048; font-size: 14px; font-weight: 650; }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      border: 0; border-radius: 999px; padding: 12px 18px; cursor: pointer; font-weight: 750;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-ghost { background: transparent; color: var(--ink); }
+    .btn-primary { background: var(--green); color: white; box-shadow: 0 9px 24px rgba(20, 107, 80, .2); }
+    .btn-lime { background: var(--lime); color: var(--green-dark); }
+
+    .hero {
+      padding: 68px 0 84px;
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      align-items: center;
+      gap: 70px;
+      min-height: 690px;
     }
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: .6rem;
-      margin: 0 0 2rem;
-      color: var(--accent);
-      font-size: .78rem;
-      font-weight: 700;
-      letter-spacing: .14em;
+      display: inline-flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 999px;
+      color: var(--green-dark); background: var(--mint); font-size: 12px; font-weight: 800; letter-spacing: .04em;
       text-transform: uppercase;
     }
-    .eyebrow::before {
-      content: "";
-      width: .55rem;
-      height: .55rem;
-      border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 1rem currentColor;
-    }
+    .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(20,107,80,.13); }
     h1 {
-      max-width: 12ch;
-      margin: 0;
-      font-size: clamp(3rem, 10vw, 6.8rem);
-      line-height: .9;
-      letter-spacing: -.065em;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(54px, 6.3vw, 88px);
+      line-height: .95;
+      letter-spacing: -.055em;
+      margin: 22px 0 24px;
+      font-weight: 500;
     }
-    p {
-      max-width: 34rem;
-      margin: 2rem 0 0;
-      color: var(--muted);
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      line-height: 1.65;
+    h1 em { font-weight: 500; color: var(--green); }
+    .hero-copy { color: var(--muted); font-size: 18px; line-height: 1.7; max-width: 590px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .hero-actions .btn { padding: 15px 22px; }
+    .micro-proof { display: flex; align-items: center; gap: 14px; margin-top: 28px; color: var(--muted); font-size: 13px; }
+    .avatars { display: flex; }
+    .avatar {
+      width: 30px; height: 30px; margin-left: -7px; border: 2px solid var(--cream); border-radius: 50%;
+      display: grid; place-items: center; color: white; font-weight: 800; font-size: 10px;
     }
-    footer {
-      margin-top: 3.5rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid rgba(255,255,255,.1);
-      color: rgba(255,255,255,.45);
-      font-size: .82rem;
+    .avatar:first-child { margin-left: 0; }
+    .avatar:nth-child(1) { background: #c65e45; }
+    .avatar:nth-child(2) { background: #416978; }
+    .avatar:nth-child(3) { background: #7a6642; }
+    .avatar:nth-child(4) { background: var(--green); }
+
+    .hero-board { position: relative; min-height: 555px; }
+    .map-card {
+      position: absolute; inset: 0 0 30px 20px; background: #e4eadf; border-radius: 34px; overflow: hidden;
+      box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.8);
+    }
+    .map-grid {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(31deg, transparent 47%, rgba(255,255,255,.82) 48%, rgba(255,255,255,.82) 51%, transparent 52%) 20px 10px/180px 140px,
+        linear-gradient(112deg, transparent 45%, rgba(255,255,255,.7) 46%, rgba(255,255,255,.7) 50%, transparent 51%) 0 0/210px 180px,
+        radial-gradient(circle at 70% 30%, #d2dfca 0 18%, transparent 19%),
+        radial-gradient(circle at 28% 78%, #cbdcc6 0 14%, transparent 15%);
+      opacity: .9;
+    }
+    .map-top {
+      position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 8px; justify-content: space-between;
+    }
+    .search-pill { background: rgba(255,253,248,.95); padding: 12px 15px; border-radius: 14px; min-width: 235px; box-shadow: 0 8px 25px rgba(31,57,45,.12); font-size: 13px; font-weight: 700; }
+    .map-mode { background: var(--ink); color: white; padding: 11px 13px; border-radius: 13px; font-size: 12px; font-weight: 750; }
+    .pin { position: absolute; transform: translate(-50%, -50%); border: 0; cursor: pointer; z-index: 2; }
+    .pin-price { background: var(--paper); padding: 8px 11px; border-radius: 999px; box-shadow: 0 7px 16px rgba(27,48,39,.16); font-size: 12px; font-weight: 850; }
+    .pin-price.active { color: white; background: var(--green); transform: translate(-50%, -50%) scale(1.08); }
+    .pin-offer { width: 36px; height: 36px; border-radius: 50% 50% 50% 12px; background: var(--coral); color: white; transform: translate(-50%,-50%) rotate(-45deg); box-shadow: 0 8px 18px rgba(255,121,95,.3); }
+    .pin-offer span { display: block; transform: rotate(45deg); }
+    .pin:nth-of-type(1) { top: 31%; left: 38%; }
+    .pin:nth-of-type(2) { top: 52%; left: 68%; }
+    .pin:nth-of-type(3) { top: 69%; left: 45%; }
+    .pin:nth-of-type(4) { top: 40%; left: 78%; }
+    .pin:nth-of-type(5) { top: 75%; left: 79%; }
+    .listing-pop {
+      position: absolute; left: 26px; bottom: 24px; z-index: 3; width: min(320px, calc(100% - 52px));
+      background: rgba(255,253,248,.97); border-radius: 20px; padding: 13px; display: grid; grid-template-columns: 84px 1fr;
+      gap: 13px; box-shadow: 0 15px 36px rgba(22,38,31,.19);
+    }
+    .listing-img { border-radius: 13px; background: linear-gradient(145deg, #d7a769 0 48%, #2d6651 49% 62%, #85b5b4 63%); min-height: 88px; position: relative; overflow: hidden; }
+    .listing-img:after { content: ""; position: absolute; width: 45px; height: 26px; background: #f7e8cc; left: 18px; bottom: 10px; border-radius: 4px 4px 0 0; }
+    .listing-copy small { color: var(--green); font-weight: 850; text-transform: uppercase; font-size: 9px; letter-spacing: .08em; }
+    .listing-copy h3 { margin: 5px 0 3px; font-size: 15px; }
+    .listing-copy p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .score-card {
+      position: absolute; right: -18px; bottom: 0; z-index: 4; width: 195px; padding: 18px; border-radius: 22px;
+      background: var(--green-dark); color: white; box-shadow: 0 18px 36px rgba(12,73,56,.25);
+    }
+    .score-head { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #b9d8ca; }
+    .score-ring { width: 66px; height: 66px; border: 7px solid rgba(255,255,255,.17); border-top-color: var(--lime); border-right-color: var(--lime); border-radius: 50%; margin: 14px auto 10px; display: grid; place-items: center; font-size: 21px; font-weight: 850; transform: rotate(20deg); }
+    .score-ring span { transform: rotate(-20deg); }
+    .score-card strong { font-size: 13px; display: block; text-align: center; }
+    .score-card p { color: #b9d8ca; font-size: 10px; line-height: 1.4; text-align: center; margin: 5px 0 0; }
+
+    .trust-strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 22px 0; }
+    .trust-inner { display: flex; justify-content: space-between; gap: 20px; color: #748078; font-size: 12px; text-transform: uppercase; letter-spacing: .13em; font-weight: 800; }
+    .trust-inner span:first-child { color: var(--green); }
+
+    .section { padding: 110px 0; }
+    .section-head { max-width: 720px; margin-bottom: 48px; }
+    .kicker { color: var(--green); font-size: 12px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(40px, 5vw, 65px); line-height: 1.02; letter-spacing: -.04em; font-weight: 500; margin: 14px 0 16px; }
+    .section-head p { color: var(--muted); line-height: 1.7; font-size: 17px; }
+
+    .tool-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+    .tool-card { border-radius: 25px; padding: 26px; min-height: 240px; position: relative; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+    .tool-card:nth-child(1) { grid-column: span 5; background: var(--green); color: white; }
+    .tool-card:nth-child(2) { grid-column: span 7; }
+    .tool-card:nth-child(3), .tool-card:nth-child(4), .tool-card:nth-child(5) { grid-column: span 4; }
+    .tool-icon { width: 43px; height: 43px; border-radius: 13px; display: grid; place-items: center; background: var(--mint); color: var(--green); font-size: 19px; }
+    .tool-card:first-child .tool-icon { background: var(--lime); color: var(--green-dark); }
+    .tool-card h3 { margin: 32px 0 10px; font-size: 22px; letter-spacing: -.03em; }
+    .tool-card p { max-width: 440px; color: var(--muted); line-height: 1.6; font-size: 14px; }
+    .tool-card:first-child p { color: #c8dfd5; }
+    .mini-chart { height: 70px; display: flex; align-items: end; gap: 6px; position: absolute; right: 25px; bottom: 24px; }
+    .mini-chart i { display: block; width: 11px; border-radius: 6px; background: var(--mint); }
+    .mini-chart i:nth-child(1) { height: 25%; }.mini-chart i:nth-child(2) { height: 42%; }.mini-chart i:nth-child(3) { height: 35%; }.mini-chart i:nth-child(4) { height: 73%; }.mini-chart i:nth-child(5) { height: 60%; }.mini-chart i:nth-child(6) { height: 90%; background: var(--lime); }
+    .chat-lines { position: absolute; right: 24px; top: 25px; width: 41%; display: grid; gap: 9px; }
+    .bubble { border-radius: 14px 14px 14px 4px; background: #edf4ed; padding: 10px 12px; font-size: 10px; color: #4f6158; }
+    .bubble:nth-child(2) { margin-left: 25px; border-radius: 14px 14px 4px 14px; background: var(--mint); }
+
+    .guest-section { background: var(--green-dark); color: white; border-radius: 42px; margin: 0 18px; overflow: hidden; }
+    .guest-inner { display: grid; grid-template-columns: .85fr 1.15fr; align-items: center; gap: 70px; }
+    .guest-section .kicker { color: var(--lime); }
+    .guest-section p { color: #bbd2c8; line-height: 1.7; }
+    .qr-row { display: flex; gap: 14px; margin-top: 27px; align-items: center; }
+    .qr { width: 68px; height: 68px; border: 8px solid white; background: repeating-conic-gradient(#17271f 0 25%, white 0 50%) 50% / 14px 14px; border-radius: 10px; }
+    .qr-row strong { display: block; margin-bottom: 3px; }.qr-row small { color: #9ebcaf; }
+    .phone {
+      width: 325px; height: 620px; margin: 75px auto -85px; border: 9px solid #15241d; background: var(--paper); border-radius: 42px 42px 0 0;
+      color: var(--ink); overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.32); position: relative;
+    }
+    .phone-notch { width: 92px; height: 22px; background: #15241d; border-radius: 0 0 16px 16px; margin: auto; }
+    .phone-head { padding: 17px 20px 13px; }
+    .phone-head small { color: var(--muted); font-size: 10px; }.phone-head h3 { margin: 4px 0; font-size: 22px; }
+    .phone-map { height: 220px; margin: 0 12px; background: #dce8d8; border-radius: 20px; position: relative; overflow: hidden; }
+    .phone-map:before { content: ""; position:absolute; inset:0; background: linear-gradient(28deg, transparent 43%, white 44% 48%, transparent 49%), linear-gradient(112deg, transparent 52%, white 53% 57%, transparent 58%); opacity:.7; }
+    .phone-pin { position: absolute; width: 32px; height: 32px; background: var(--coral); border: 4px solid white; border-radius: 50%; display: grid; place-items:center; color:white; font-size:11px; box-shadow: 0 7px 15px rgba(0,0,0,.15); z-index:2; }
+    .phone-pin:nth-child(1) { left:25%;top:36%;}.phone-pin:nth-child(2){left:62%;top:23%;background:var(--green)}.phone-pin:nth-child(3){left:69%;top:67%;background:#d69b35}
+    .offer-label { padding: 16px 19px 8px; display:flex; justify-content:space-between; font-size:12px; font-weight:800; }
+    .offers { display:flex; gap:10px; padding:0 12px; }
+    .offer { flex:0 0 132px; background:white; border:1px solid var(--line); border-radius:16px; padding:10px; }
+    .offer-art { height:72px; border-radius:11px; background: linear-gradient(135deg,#efbd79,#8b3b2d); margin-bottom:8px; }
+    .offer:nth-child(2) .offer-art { background:linear-gradient(135deg,#54795c,#d9b567);}.offer strong{font-size:11px;display:block}.offer small{font-size:9px;color:var(--coral);font-weight:800}
+
+    .journey { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; counter-reset: journey; }
+    .step { counter-increment: journey; background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 22px; min-height: 180px; }
+    .step:before { content: "0" counter(journey); display:block; color: var(--coral); font-size:11px; font-weight:850; letter-spacing:.1em; margin-bottom:28px; }
+    .step strong { display:block; font-size:17px; margin-bottom:8px; }.step p{color:var(--muted);font-size:13px;line-height:1.55;margin:0}
+
+    .cta { padding: 20px 0 100px; }
+    .cta-box { background: var(--lime); border-radius: 35px; padding: 60px; display:flex; align-items:center; justify-content:space-between; gap:35px; }
+    .cta-box h2 { font-size: clamp(38px,4vw,58px); max-width:700px; margin:0; }.cta-box p{color:#4d663e;max-width:620px;line-height:1.6}
+    .score-form { background:white; padding:7px; border-radius:999px; display:flex; min-width:380px; box-shadow:0 15px 35px rgba(60,90,40,.13); }
+    .score-form input { flex:1; border:0; outline:0; padding:0 15px; min-width:0; background:transparent; }
+    footer { padding: 30px 0 50px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
+    .footer-inner {display:flex;justify-content:space-between;align-items:center;gap:20px}.footer-links{display:flex;gap:20px}
+
+    .toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%,120px); background:var(--ink); color:white; padding:13px 18px; border-radius:999px; font-size:13px; font-weight:700; z-index:20; transition:.35s ease; box-shadow:0 12px 30px rgba(0,0,0,.2)}
+    .toast.show { transform:translate(-50%,0); }
+
+    @media (max-width: 900px) {
+      .nav-links { display:none; }
+      .hero { grid-template-columns:1fr; gap:35px; padding-top:40px; }
+      .hero-board { min-height:500px; }.map-card{left:0}.score-card{right:8px}
+      .tool-card:nth-child(n) { grid-column:span 6; }.tool-card:nth-child(2){grid-column:span 7}.tool-card:nth-child(3){grid-column:span 5}
+      .guest-inner {grid-template-columns:1fr;gap:0}.guest-copy{padding-top:75px}.phone{margin-top:25px}
+      .journey{grid-template-columns:1fr 1fr}.cta-box{flex-direction:column;align-items:flex-start}.score-form{width:100%;min-width:0}
+    }
+    @media (max-width: 600px) {
+      .shell { width:min(100% - 26px,1180px);}.nav{height:66px}.nav-actions .btn-ghost{display:none}.nav-actions .btn{padding:10px 13px;font-size:12px}
+      .hero{padding:36px 0 65px;min-height:0}h1{font-size:52px}.hero-copy{font-size:16px}.hero-board{min-height:430px}.map-card{bottom:20px;border-radius:25px}.score-card{width:160px;padding:13px}.listing-pop{left:13px;bottom:16px;grid-template-columns:65px 1fr}.listing-img{min-height:72px}.search-pill{min-width:0;max-width:70%}
+      .trust-inner{overflow:auto;justify-content:flex-start;white-space:nowrap}.section{padding:75px 0}.tool-card:nth-child(n){grid-column:span 12}.chat-lines{width:38%}
+      .guest-section{margin:0 7px;border-radius:28px}.phone{width:286px;height:580px}.journey{grid-template-columns:1fr}.cta-box{padding:38px 23px}.score-form{border-radius:18px;flex-direction:column;gap:6px}.score-form input{padding:13px}.score-form .btn{width:100%}.footer-inner{align-items:flex-start;flex-direction:column}
     }
   </style>
 </head>
 <body>
-  <main>
-    <div class="eyebrow">In development</div>
-    <h1>All the rooms. One intelligent view.</h1>
-    <p>AllTheRooms.ai is taking shape. We’re building a smarter way to bring hospitality intelligence into focus.</p>
-    <footer>© 2026 AllTheRooms.ai</footer>
+  <header class="shell">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a>
+      <div class="nav-links"><a href="#explore">Explore stays</a><a href="#host">For hosts</a><a href="#local">Local</a><a href="#community">Community</a></div>
+      <div class="nav-actions"><button class="btn btn-ghost" data-toast="Sign-in preview">Sign in</button><button class="btn btn-primary" onclick="document.querySelector('#score').scrollIntoView()">Score my property</button></div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-dot"></span>The open network for short-term rentals</div>
+        <h1>Own your stay.<br><em>Unlock the local.</em></h1>
+        <p class="hero-copy">List and book without the middleman. Understand your property. Meet nearby hosts. Give every guest a local experience they can’t get anywhere else.</p>
+        <div class="hero-actions"><button class="btn btn-primary" onclick="document.querySelector('#score').scrollIntoView()">Get your free property score →</button><button class="btn btn-ghost" onclick="document.querySelector('#local').scrollIntoView()">Explore the local map</button></div>
+        <div class="micro-proof"><div class="avatars"><span class="avatar">JM</span><span class="avatar">LK</span><span class="avatar">RD</span><span class="avatar">+</span></div><span>Built for independent hosts, curious guests, and local businesses.</span></div>
+      </div>
+      <div class="hero-board" aria-label="Interactive preview of local stays and property score">
+        <div class="map-card">
+          <div class="map-grid"></div>
+          <div class="map-top"><div class="search-pill">⌕ &nbsp; Hudson Valley, New York</div><div class="map-mode">Local view ▾</div></div>
+          <button class="pin pin-price active" data-toast="Cabin selected · $214 per night">$214</button>
+          <button class="pin pin-price" data-toast="Farmhouse selected · $286 per night">$286</button>
+          <button class="pin pin-price" data-toast="Cottage selected · $178 per night">$178</button>
+          <button class="pin pin-offer" data-toast="15% off at Field & Vine"><span>🍷</span></button>
+          <button class="pin pin-offer" data-toast="Host favorite · The Orchard Table"><span>✦</span></button>
+          <div class="listing-pop"><div class="listing-img"></div><div class="listing-copy"><small>Direct stay · no booking fee</small><h3>Creekside cabin</h3><p>2 beds · Hosted by Maya<br><strong>★ 4.94 &nbsp; $214 night</strong></p></div></div>
+        </div>
+        <aside class="score-card"><div class="score-head"><span>YOUR PROPERTY SCORE</span><span>↗</span></div><div class="score-ring"><span>87</span></div><strong>Top 12% in your market</strong><p>Three actions could add $8.4k in annual revenue.</p></aside>
+      </div>
+    </section>
+
+    <div class="trust-strip"><div class="shell trust-inner"><span>One platform. Every room.</span><span>Direct bookings</span><span>Market intelligence</span><span>Host community</span><span>Local rewards</span></div></div>
+
+    <section class="section shell" id="host">
+      <div class="section-head"><span class="kicker">The host toolkit</span><h2>Everything your property needs, in one place.</h2><p>Claim your property for free. See how it performs, connect directly with guests, and turn local knowledge into a stay worth remembering.</p></div>
+      <div class="tool-grid">
+        <article class="tool-card"><div class="tool-icon">87</div><h3>Your property score</h3><p>See how your pricing, amenities, listing quality, guest experience, and market position stack up—and exactly what to improve next.</p><div class="mini-chart"><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="tool-card"><div class="tool-icon">◎</div><h3>Know your market</h3><p>Live rates, demand, revenue potential, regulations, and neighborhood trends—made understandable.</p><div class="mini-chart"><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="tool-card"><div class="tool-icon">↗</div><h3>Book direct</h3><p>Build repeat relationships and accept commission-free bookings from verified guests.</p></article>
+        <article class="tool-card" id="community"><div class="tool-icon">☵</div><h3>Talk to your host community</h3><p>Join neighborhood channels, trade referrals, solve problems, and learn from people nearby.</p><div class="chat-lines"><div class="bubble">Anyone have a great local cleaner?</div><div class="bubble">Yes—just sent you Nina’s profile!</div></div></article>
+        <article class="tool-card"><div class="tool-icon">⌁</div><h3>Your guest guide</h3><p>One property code for house details, direct chat, your favorite places, and exclusive local offers.</p></article>
+      </div>
+    </section>
+
+    <section class="guest-section" id="local">
+      <div class="shell guest-inner">
+        <div class="guest-copy"><span class="kicker">The local layer</span><h2>Every stay comes with the neighborhood.</h2><p>Leave one unique code in your property. Guests scan it to open your living local guide—complete with personal recommendations, nearby events, trusted services, and discounts from businesses around the corner.</p><div class="qr-row"><div class="qr" aria-hidden="true"></div><div><strong>Scan. Explore. Save local.</strong><small>Every visit is attributed to the host.</small></div></div></div>
+        <div class="phone"><div class="phone-notch"></div><div class="phone-head"><small>WELCOME TO MAYA’S CABIN</small><h3>Your local guide</h3></div><div class="phone-map"><span class="phone-pin">🍷</span><span class="phone-pin">⌂</span><span class="phone-pin">☕</span></div><div class="offer-label"><span>Offers near you</span><span style="color:var(--green)">See all</span></div><div class="offers"><div class="offer"><div class="offer-art"></div><strong>Field & Vine</strong><small>15% OFF · HOST PICK</small></div><div class="offer"><div class="offer-art"></div><strong>Juniper Table</strong><small>FREE WELCOME BITE</small></div></div></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="explore">
+      <div class="section-head"><span class="kicker">How the network grows</span><h2>Useful on day one. More valuable with every stay.</h2></div>
+      <div class="journey"><article class="step"><strong>A host claims a property</strong><p>Free intelligence and a clear property score create the first reason to join.</p></article><article class="step"><strong>The listing goes direct</strong><p>Guests discover the stay, contact the host, and book without an added platform fee.</p></article><article class="step"><strong>The guest scans in</strong><p>A unique property code opens the house guide, local map, direct chat, and offers.</p></article><article class="step"><strong>The neighborhood wins</strong><p>Local businesses gain verified visitors, guests save, and hosts create a better stay.</p></article></div>
+    </section>
+
+    <section class="cta" id="score"><div class="shell"><div class="cta-box"><div><span class="kicker">Start with your address</span><h2>How strong is your short-term rental?</h2><p>Claim your free property profile and get a personalized score in minutes.</p></div><form class="score-form" id="scoreForm"><input aria-label="Property address" required placeholder="Enter your property address"><button class="btn btn-primary" type="submit">Get my score →</button></form></div></div></section>
   </main>
+
+  <footer><div class="shell footer-inner"><a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a><div>© 2026 AllTheRooms · The open network for better stays.</div><div class="footer-links"><a href="#host">Hosts</a><a href="#local">Local businesses</a><a href="#community">Community</a></div></div></footer>
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const toast = document.querySelector('.toast');
+    let toastTimer;
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+    document.querySelectorAll('[data-toast]').forEach(el => el.addEventListener('click', () => {
+      if (el.classList.contains('pin-price')) {
+        document.querySelectorAll('.pin-price').forEach(pin => pin.classList.remove('active'));
+        el.classList.add('active');
+      }
+      showToast(el.dataset.toast);
+    }));
+    document.querySelector('#scoreForm').addEventListener('submit', event => {
+      event.preventDefault();
+      showToast('Great address — your free score preview is being prepared.');
+      event.target.querySelector('input').value = '';
+    });
+  </script>
 </body>
 </html>
