@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AllTheRooms.ai — Coming Soon</title>
+  <meta name="description" content="AllTheRooms.ai is coming soon.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f6f4ef;
+      --muted: #aaa69d;
+      --accent: #a7f3d0;
+      --panel: rgba(255,255,255,.06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(16,185,129,.2), transparent 34rem),
+        radial-gradient(circle at 85% 80%, rgba(59,130,246,.16), transparent 32rem),
+        #0a0b0d;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(92vw, 760px);
+      padding: clamp(2rem, 6vw, 5rem);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 28px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 30px 90px rgba(0,0,0,.35);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      margin: 0 0 2rem;
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: .55rem;
+      height: .55rem;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 1rem currentColor;
+    }
+    h1 {
+      max-width: 12ch;
+      margin: 0;
+      font-size: clamp(3rem, 10vw, 6.8rem);
+      line-height: .9;
+      letter-spacing: -.065em;
+    }
+    p {
+      max-width: 34rem;
+      margin: 2rem 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.65;
+    }
+    footer {
+      margin-top: 3.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.45);
+      font-size: .82rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">In development</div>
+    <h1>All the rooms. One intelligent view.</h1>
+    <p>AllTheRooms.ai is taking shape. We’re building a smarter way to bring hospitality intelligence into focus.</p>
+    <footer>© 2026 AllTheRooms.ai</footer>
+  </main>
+</body>
+</html>
