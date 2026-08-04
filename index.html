@@ -3,7 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AllTheRooms — the open network for short-term rentals." />
+  <meta name="description" content="AllTheRooms is the open network for better short-term rental stays, connecting independent hosts, curious guests, local businesses, and destination travel guides." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
+  <meta name="author" content="AllTheRooms" />
+  <meta name="theme-color" content="#146b50" />
+  <link rel="canonical" href="https://www.alltherooms.ai/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="AllTheRooms" />
+  <meta property="og:title" content="AllTheRooms — Own Your Stay. Unlock the Local." />
+  <meta property="og:description" content="A better way to discover stays, understand properties, meet local hosts, and explore destinations." />
+  <meta property="og:url" content="https://www.alltherooms.ai/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="AllTheRooms — Own Your Stay. Unlock the Local." />
+  <meta name="twitter:description" content="A better way to discover stays, understand properties, meet local hosts, and explore destinations." />
   <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
   <title>AllTheRooms — Own your stay</title>
   <style>
@@ -203,6 +215,12 @@
     .step:before { content: "0" counter(journey); display:block; color: var(--coral); font-size:11px; font-weight:850; letter-spacing:.1em; margin-bottom:28px; }
     .step strong { display:block; font-size:17px; margin-bottom:8px; }.step p{color:var(--muted);font-size:13px;line-height:1.55;margin:0}
 
+    .editorial { padding: 100px 0; }
+    .editorial-card { display:grid; grid-template-columns:1fr auto; align-items:center; gap:35px; padding:42px; border-radius:30px; background:var(--paper); border:1px solid var(--line); box-shadow:var(--shadow); }
+    .editorial-card h2 { margin:10px 0 12px; font-size:clamp(36px,4.5vw,58px); }
+    .editorial-card p { color:var(--muted); line-height:1.7; max-width:690px; }
+    .editorial-card .btn { white-space:nowrap; }
+
     .cta { padding: 20px 0 100px; }
     .cta-box { background: var(--lime); border-radius: 35px; padding: 60px; display:flex; align-items:center; justify-content:space-between; gap:35px; }
     .cta-box h2 { font-size: clamp(38px,4vw,58px); max-width:700px; margin:0; }.cta-box p{color:#4d663e;max-width:620px;line-height:1.6}
@@ -220,7 +238,7 @@
       .hero-board { min-height:500px; }.map-card{left:0}.score-card{right:8px}
       .tool-card:nth-child(n) { grid-column:span 6; }.tool-card:nth-child(2){grid-column:span 7}.tool-card:nth-child(3){grid-column:span 5}
       .guest-inner {grid-template-columns:1fr;gap:0}.guest-copy{padding-top:75px}.phone{margin-top:25px}
-      .journey{grid-template-columns:1fr 1fr}.cta-box{flex-direction:column;align-items:flex-start}.score-form{width:100%;min-width:0}
+      .journey{grid-template-columns:1fr 1fr}.editorial-card{grid-template-columns:1fr}.cta-box{flex-direction:column;align-items:flex-start}.score-form{width:100%;min-width:0}
     }
     @media (max-width: 600px) {
       .shell { width:min(100% - 26px,1180px);}.nav{height:66px}.nav-actions .btn-ghost{display:none}.nav-actions .btn{padding:10px 13px;font-size:12px}
@@ -229,12 +247,17 @@
       .guest-section{margin:0 7px;border-radius:28px}.phone{width:286px;height:580px}.journey{grid-template-columns:1fr}.cta-box{padding:38px 23px}.score-form{border-radius:18px;flex-direction:column;gap:6px}.score-form input{padding:13px}.score-form .btn{width:100%}.footer-inner{align-items:flex-start;flex-direction:column}
     }
   </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.alltherooms.ai/#organization","name":"AllTheRooms","url":"https://www.alltherooms.ai/","logo":"https://www.alltherooms.ai/favicon.svg"},{"@type":"WebSite","@id":"https://www.alltherooms.ai/#website","url":"https://www.alltherooms.ai/","name":"AllTheRooms","description":"The open network for better short-term rental stays and destination travel guides.","publisher":{"@id":"https://www.alltherooms.ai/#organization"},"inLanguage":"en-US"}]}
+  </script>
+  <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <header class="shell">
     <nav class="nav" aria-label="Main navigation">
       <a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a>
-      <div class="nav-links"><a href="#explore">Explore stays</a><a href="#host">For hosts</a><a href="#local">Local</a><a href="#community">Community</a></div>
+      <div class="nav-links"><a href="#explore">Explore stays</a><a href="#host">For hosts</a><a href="#local">Local</a><a href="/travel/">Travel guides</a></div>
       <div class="nav-actions"><button class="btn btn-ghost" data-toast="Sign-in preview">Sign in</button><button class="btn btn-primary" onclick="document.querySelector('#score').scrollIntoView()">Score my property</button></div>
     </nav>
   </header>
@@ -291,7 +314,7 @@
     <section class="cta" id="score"><div class="shell"><div class="cta-box"><div><span class="kicker">Start with your address</span><h2>How strong is your short-term rental?</h2><p>Claim your free property profile and get a personalized score in minutes.</p></div><form class="score-form" id="scoreForm"><input aria-label="Property address" required placeholder="Enter your property address"><button class="btn btn-primary" type="submit">Get my score →</button></form></div></div></section>
   </main>
 
-  <footer><div class="shell footer-inner"><a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a><div>© 2026 AllTheRooms · The open network for better stays.</div><div class="footer-links"><a href="#host">Hosts</a><a href="#local">Local businesses</a><a href="#community">Community</a></div></div></footer>
+  <footer><div class="shell footer-inner"><a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a><div>© 2026 AllTheRooms · The open network for better stays.</div><nav class="footer-links" aria-label="Footer navigation"><a href="/travel/">Travel guides</a><a href="/travel/puerto-rico/">Puerto Rico</a><a href="/travel/puerto-rico/rincon/">Rincón</a><a href="/sitemap.xml">Sitemap</a></nav></div></footer>
   <div class="toast" role="status" aria-live="polite"></div>
 
   <script>
