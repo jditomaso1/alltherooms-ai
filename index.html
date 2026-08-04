@@ -259,8 +259,8 @@
   <header class="shell">
     <nav class="nav" aria-label="Main navigation">
       <a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a>
-      <div class="nav-links"><a href="#explore">Explore stays</a><a href="#host">For hosts</a><a href="#local">Local</a><a href="/travel/">Travel guides</a></div>
-      <div class="nav-actions"><button class="btn btn-ghost" data-toast="Sign-in preview">Sign in</button><button class="btn btn-primary" onclick="document.querySelector('#score').scrollIntoView()">Score my property</button></div>
+      <div class="nav-links"><a href="#explore">Explore stays</a><a href="/hosts/">For hosts</a><a href="#local">Local</a><a href="/travel/">Travel guides</a></div>
+      <div class="nav-actions"><a class="btn btn-ghost" href="/prototype/host/">Host sign in</a><a class="btn btn-primary" href="/hosts/property-score/">Score my property</a></div>
     </nav>
   </header>
 
@@ -271,7 +271,7 @@
         <h1>Own your stay.<br><em>Unlock the local.</em></h1>
         <p class="hero-copy">List and book without the middleman. Understand your property. Meet nearby hosts. Give every guest a local experience they can’t get anywhere else.</p>
         <p class="ecosystem-line">Built for hosts.<span aria-hidden="true">•</span>Experienced by guests.<span aria-hidden="true">•</span>Powered by the local community.</p>
-        <div class="hero-actions"><button class="btn btn-primary" onclick="document.querySelector('#score').scrollIntoView()">Get your free property score →</button><button class="btn btn-ghost" onclick="document.querySelector('#local').scrollIntoView()">Explore the local map</button></div>
+        <div class="hero-actions"><a class="btn btn-primary" href="/hosts/property-score/">Get your free property score →</a><button class="btn btn-ghost" onclick="document.querySelector('#local').scrollIntoView()">Explore the local map</button></div>
         <div class="micro-proof"><div class="avatars"><span class="avatar">JM</span><span class="avatar">LK</span><span class="avatar">RD</span><span class="avatar">+</span></div><span>Built for independent hosts, curious guests, and local businesses.</span></div>
       </div>
       <div class="hero-board" aria-label="Interactive preview of local stays and property score">
@@ -317,7 +317,7 @@
     <section class="cta" id="score"><div class="shell"><div class="cta-box"><div><span class="kicker">Start with your address</span><h2>How strong is your short-term rental?</h2><p>Claim your free property profile and get a personalized score in minutes.</p></div><form class="score-form" id="scoreForm"><input aria-label="Property address" required placeholder="Enter your property address"><button class="btn btn-primary" type="submit">Get my score →</button></form></div></div></section>
   </main>
 
-  <footer><div class="shell footer-inner"><a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a><div>© 2026 AllTheRooms · The open network for better stays.</div><nav class="footer-links" aria-label="Footer navigation"><a href="/travel/">Travel guides</a><a href="/travel/puerto-rico/">Puerto Rico</a><a href="/travel/puerto-rico/rincon/">Rincón</a><a href="/sitemap.xml">Sitemap</a></nav></div></footer>
+  <footer><div class="shell footer-inner"><a class="brand" href="#top"><span class="brand-mark"><span>⌂</span></span> alltherooms</a><div>© 2026 AllTheRooms · The open network for better stays.</div><nav class="footer-links" aria-label="Footer navigation"><a href="/hosts/">For hosts</a><a href="/prototype/host/">Host prototype</a><a href="/travel/">Travel guides</a><a href="/travel/puerto-rico/">Puerto Rico</a><a href="/travel/puerto-rico/rincon/">Rincón</a><a href="/sitemap.xml">Sitemap</a></nav></div></footer>
   <div class="toast" role="status" aria-live="polite"></div>
 
   <script>
