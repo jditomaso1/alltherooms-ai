@@ -1,0 +1,3 @@
+id,url,title,timestamp,coordinates/latitude,coordinates/longitude,locationSubtitle,personCapacity,propertyType,roomType,isAvailable,price/price,rating/guestSatisfaction,rating/reviewsCount,images/0/imageUrl,images/0/caption,amenities/0/title,amenities/0/values/0/title,amenities/0/values/0/available
+123,https://www.airbnb.com/rooms/123?currency=USD&check_in=2026-08-20&check_out=2026-08-25,Test Home,2026-08-04T21:10:19.017Z,18.3611,-67.26422,"Rincón, Puerto Rico",4,Entire home,Entire home/apt,true,"$1,250",4.90,20,https://images.example/test.jpg,Ocean view,Essentials,Wifi,true
+
