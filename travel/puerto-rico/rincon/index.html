@@ -75,8 +75,8 @@
           {"@type": "ListItem", "position": 1, "name": "AllTheRooms", "item": "https://www.alltherooms.ai/"},
           {"@type": "ListItem", "position": 2, "name": "Travel Guides", "item": "https://www.alltherooms.ai/travel/"},
           {"@type": "ListItem", "position": 3, "name": "Puerto Rico", "item": "https://www.alltherooms.ai/travel/puerto-rico/"},
-          {"@type": "ListItem", "position": 4, "name": "Rincón, Puerto Rico"},
-                  ]
+          {"@type": "ListItem", "position": 4, "name": "Rincón, Puerto Rico"}
+        ]
       }
     ]
   }
@@ -199,6 +199,14 @@
     .plan-row strong { color: var(--green); font-size: 12px; text-transform: uppercase; letter-spacing: .09em; }
     .plan-row p { margin: 0; font-size: 15px; }
 
+    .guide-library { padding: 90px 0; background: var(--paper); border-top: 1px solid var(--line); }
+    .guide-library h2 { font-size: clamp(40px, 5vw, 64px); line-height: 1; margin: 12px 0 30px; }
+    .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .guide-link { min-height: 150px; padding: 23px; border: 1px solid var(--line); border-radius: 21px; background: var(--cream); display: flex; flex-direction: column; justify-content: space-between; transition: transform .2s ease, border-color .2s ease; }
+    .guide-link:hover { transform: translateY(-3px); border-color: var(--green); }
+    .guide-link strong { font-family: Georgia, "Times New Roman", serif; font-size: 23px; line-height: 1.12; font-weight: 500; }
+    .guide-link span { color: var(--green); font-size: 12px; font-weight: 800; margin-top: 18px; }
+
     .cta { padding: 74px 0; background: var(--lime); }
     .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 44px; }
     .cta h2 { font-size: clamp(40px, 5vw, 64px); line-height: 1; margin: 10px 0 14px; max-width: 760px; }
@@ -212,6 +220,7 @@
       .nav-links { display: none; }
       .hero-grid { grid-template-columns: 1fr; gap: 30px; }
       .quick-card { transform: none; }
+      .guide-grid { grid-template-columns: 1fr 1fr; }
       .cta-inner { align-items: flex-start; flex-direction: column; }
     }
     @media (max-width: 560px) {
@@ -222,7 +231,7 @@
       h1 { font-size: 53px; }
       .dek { font-size: 16px; }
       .hero-image { min-height: 410px; }
-      .beach-grid { grid-template-columns: 1fr; }
+      .beach-grid, .guide-grid { grid-template-columns: 1fr; }
       .inline-image { margin-left: 0; margin-right: 0; width: 100%; min-height: 330px; border-radius: 21px; }
       .plan-row { grid-template-columns: 1fr; gap: 6px; }
       .footer-inner { align-items: flex-start; flex-direction: column; }
@@ -375,6 +384,24 @@
         <p>The best Rincón stay does more than hold your suitcase. It puts the right beach, coffee counter, food truck, and sunset ritual within reach. That is the promise of travel done locally: not merely sleeping somewhere, but briefly learning its rhythm.</p>
       </div>
     </article>
+
+    <section class="guide-library" aria-labelledby="rincon-guides">
+      <div class="shell">
+        <span class="kicker">Plan your Rincón trip</span>
+        <h2 id="rincon-guides">Nine ways into the west coast.</h2>
+        <div class="guide-grid">
+          <a class="guide-link" href="/travel/puerto-rico/rincon/best-beaches/"><strong>The Best Beaches in Rincón</strong><span>Find your stretch of sand →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/where-to-stay/"><strong>Where to Stay in Rincón</strong><span>Choose your neighborhood →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/surfing-guide/"><strong>The Rincón Surfing Guide</strong><span>Read the swell →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/best-time-to-visit/"><strong>The Best Time to Visit</strong><span>Pick your season →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/three-day-itinerary/"><strong>A Perfect Three-Day Itinerary</strong><span>Plan the long weekend →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/snorkeling/"><strong>Snorkeling in Rincón</strong><span>Meet the reef →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/family-travel/"><strong>Rincón with Kids</strong><span>Make it family-friendly →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/sunset-day/"><strong>The Ultimate Sunset Day</strong><span>Chase the golden hour →</span></a>
+          <a class="guide-link" href="/travel/puerto-rico/rincon/rincon-vs-aguadilla/"><strong>Rincón vs. Aguadilla</strong><span>Choose your west-coast base →</span></a>
+        </div>
+      </div>
+    </section>
 
     <section class="cta">
       <div class="shell cta-inner">
