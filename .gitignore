@@ -1,0 +1,10 @@
+# Airbnb/Apify exports may contain licensed, personal, or rapidly changing data.
+dataset_airbnb-scraper_*.csv
+data/raw/
+data/private/
+data/normalized/
+*.sqlite
+.env
+.env.*
+!.env.example
+
