@@ -170,7 +170,7 @@ def run(input_path: Path, output_dir: Path) -> dict:
             raise ValueError(f"missing required columns: {', '.join(missing)}")
         rows = list(reader)
 
-    listings, snapshots, images, amenities = [], [], [], []
+    listings, snapshots, images, amenities, product_listings = [], [], [], [], []
     errors = []
     seen_ids = Counter(row.get("id") for row in rows)
     for line, row in enumerate(rows, start=2):
@@ -180,6 +180,33 @@ def run(input_path: Path, output_dir: Path) -> dict:
             snapshots.append(snapshot)
             images.extend(row_images)
             amenities.extend(row_amenities)
+            product_listings.append({
+                "id": listing["provider_listing_id"],
+                "title": listing["title"],
+                "url": row["url"],
+                "image": (row_images[0]["image_url"] if row_images else row.get("thumbnail")),
+                "images": [
+                    {"url": item["image_url"], "caption": item["caption"]}
+                    for item in row_images[:8]
+                ],
+                "description": row.get("description") or row.get("metaDescription") or "",
+                "propertyType": listing["property_type"],
+                "roomType": listing["room_type"],
+                "location": listing["location_label"],
+                "latitude": listing["latitude"],
+                "longitude": listing["longitude"],
+                "capacity": snapshot["person_capacity"],
+                "rating": snapshot["guest_rating"],
+                "reviews": snapshot["review_count"],
+                "quotedPrice": snapshot["quoted_price"],
+                "currency": snapshot["currency"],
+                "checkIn": snapshot["check_in"],
+                "checkOut": snapshot["check_out"],
+                "amenities": [
+                    item["display_name"] for item in row_amenities
+                    if item["available"] is not False
+                ][:30],
+            })
         except (KeyError, ValueError) as exc:
             errors.append({"line": line, "error": str(exc)})
 
@@ -187,6 +214,10 @@ def run(input_path: Path, output_dir: Path) -> dict:
     write_jsonl(output_dir / "listing_snapshots.jsonl", snapshots)
     write_jsonl(output_dir / "listing_images.jsonl", images)
     write_jsonl(output_dir / "listing_amenities.jsonl", amenities)
+    (output_dir / "product_listings.json").write_text(
+        json.dumps(product_listings, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
     prices = [Decimal(item["quoted_price"]) for item in snapshots if item["quoted_price"]]
     report = {
         "source_file": input_path.name,
@@ -217,4 +248,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
