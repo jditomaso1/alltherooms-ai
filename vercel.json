@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/prototype/host/market/rincon/properties/:id/",
+      "destination": "/prototype/host/market/rincon/property-template.html"
+    }
+  ]
+}
