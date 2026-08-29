@@ -10,6 +10,7 @@
   <link rel="shortcut icon" href="/favicon.svg?v=8">
   <link rel="stylesheet" href="/assets/css/property-template-v2.css">
   <link rel="stylesheet" href="/assets/css/property-direct-booking.css">
+  <link rel="stylesheet" href="/assets/css/property-detail-upgrades.css">
   <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -37,12 +38,13 @@
 
   <script>
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
-    const safeUrl = (value, fallback = "#") => {
+    const httpUrl = (value, fallback = "#") => {
       try {
         const url = new URL(String(value), location.origin);
-        return ["http:", "https:"].includes(url.protocol) ? escapeHtml(url.href) : fallback;
+        return ["http:", "https:"].includes(url.protocol) ? url.href : fallback;
       } catch { return fallback; }
     };
+    const safeUrl = (value, fallback = "#") => escapeHtml(httpUrl(value, fallback));
     const money = (value, currency = "USD") => new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(Number(value || 0));
     const dateLabel = (value) => {
       const date = new Date(`${value}T00:00:00Z`);
@@ -85,17 +87,49 @@
         const sourceDates = dateLabel(listing.checkIn) && dateLabel(listing.checkOut) ? `${dateLabel(listing.checkIn)}–${dateLabel(listing.checkOut)}` : "Current source dates";
         const signal = rating >= 4.9 ? "Exceptional guest signal" : rating >= 4.7 ? "Highly rated stay" : "Active Rincón listing";
         const amenities = listing.amenities || [];
-        const take = (pattern) => amenities.filter((item) => pattern.test(item)).slice(0, 3);
-        const groups = [
-          { code: "CL", label: "Climate", items: take(/air conditioning|heating|fan|hot water/i) },
-          { code: "EV", label: "Everyday", items: take(/wifi|washer|dryer|linen|hanger|shade|tv/i) },
-          { code: "KI", label: "Kitchen", items: take(/kitchen|refrigerator|coffee|dining|stove|microwave|toaster/i) },
-          { code: "OU", label: "Outdoor", items: take(/outdoor|patio|balcony|yard|pool|beach/i) },
+        const amenityDefinitions = [
+          { code: "CO", label: "Comfort & bath", pattern: /air conditioning|heating|fan|hot water|hair dryer|shampoo|conditioner|soap|shower|washer|dryer|essentials|hanger|bed linen|pillow|shade|clothing|iron/i },
+          { code: "KI", label: "Kitchen & dining", pattern: /kitchen|refrigerator|microwave|cooking|dishes|silverware|freezer|dishwasher|stove|oven|coffee|wine glass|toaster|blender|dining/i },
+          { code: "OU", label: "Outdoor & beach", pattern: /beach|ocean|sea view|waterfront|outdoor|patio|balcony|yard|hammock|barbecue|bbq|pool|hot tub|kayak|sun lounger|parking|solar/i },
+          { code: "EN", label: "Entertainment & work", pattern: /wifi|tv|workspace|game|sound system/i },
+          { code: "FA", label: "Family & stays", pattern: /crib|pack .n play|high chair|booster|pets allowed|long term|luggage|cleaning available/i },
+          { code: "SA", label: "Safety & access", pattern: /camera|smoke alarm|carbon monoxide|fire extinguisher|first aid|private entrance|self check-in|keypad|lockbox|doorman/i },
         ];
-        const fallbackAmenities = amenities.slice(0, 12);
-        groups.forEach((group, index) => {
-          if (!group.items.length) group.items = fallbackAmenities.slice(index * 3, index * 3 + 3);
-        });
+        const categorized = new Set();
+        const amenityGroups = amenityDefinitions.map((group) => ({
+          ...group,
+          items: amenities.filter((item) => {
+            if (!group.pattern.test(item) || categorized.has(item)) return false;
+            categorized.add(item);
+            return true;
+          }),
+        })).filter((group) => group.items.length);
+        const otherAmenities = amenities.filter((item) => !categorized.has(item));
+        if (otherAmenities.length) amenityGroups.push({ code: "MO", label: "More features", items: otherAmenities });
+
+        const extractDetail = (pattern, maximum) => {
+          const flags = pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`;
+          for (const match of description.matchAll(new RegExp(pattern.source, flags))) {
+            const value = Number(match[1]);
+            if (value > 0 && value <= maximum) return value;
+          }
+          return 0;
+        };
+        const extractPhotoDetail = (pattern, maximum) => Math.max(0, ...images.map((image) => {
+          const match = String(image.caption || "").match(pattern);
+          const value = match ? Number(match[1]) : 0;
+          return value <= maximum ? value : 0;
+        }));
+        const bedrooms = extractDetail(/\b(\d+)\s*(?:-| )\s*bedrooms?\b/i, 30) || extractPhotoDetail(/\bbedroom\s+(\d+)\b/i, 30);
+        const bathrooms = extractDetail(/\b(\d+(?:\.\d+)?)\s*(?:-| )\s*(?:full\s+)?bathrooms?\b/i, 30) || extractPhotoDetail(/\b(?:full\s+)?bathroom\s+(\d+)\b/i, 30);
+        const beds = extractDetail(/\ba\s+total\s+of\s+(\d+)\s+beds?\b/i, 100) || extractDetail(/\b(\d+)\s+beds?\b/i, 100);
+        const kitchens = extractDetail(/\b(\d+)\s+(?:equipped\s+)?kitchens?\b/i, 20);
+        const stayDetails = [
+          bedrooms ? { label: "Bedrooms", value: bedrooms, note: bedrooms === 1 ? "Private sleeping room" : "Sleeping rooms" } : null,
+          bathrooms ? { label: "Bathrooms", value: bathrooms, note: bathrooms === 1 ? "Full bathroom" : "Bathrooms listed" } : null,
+          beds ? { label: "Beds", value: beds, note: beds === 1 ? "Listed bed" : "Beds across the stay" } : null,
+          kitchens ? { label: "Kitchens", value: kitchens, note: kitchens === 1 ? "Equipped kitchen" : "Kitchen spaces" } : null,
+        ].filter(Boolean);
 
         document.title = `${title} | AllTheRooms`;
         document.querySelector('meta[name="description"]').content = description.slice(0, 155);
@@ -121,8 +155,8 @@
 
           <section class="property-media-section atr-container">
             <div class="property-gallery" aria-label="Property photo gallery">
-              ${gallery.map((image, index) => `<figure class="property-photo photo-${index + 1}"><img src="${safeUrl(image.url, "/property/living-room-1.jpg")}" alt="${escapeHtml(image.caption || title)}" loading="${index === 0 ? "eager" : "lazy"}"></figure>`).join("")}
-              <button class="gallery-button" type="button">View all ${escapeHtml(images.length)} photos <span>↗</span></button>
+              ${gallery.map((image, index) => `<figure class="property-photo photo-${index + 1}"><button class="gallery-photo-button" type="button" data-gallery-index="${index}" aria-label="Open photo ${index + 1} of ${images.length}"><img src="${safeUrl(image.url, "/property/living-room-1.jpg")}" alt="${escapeHtml(image.caption || title)}" loading="${index === 0 ? "eager" : "lazy"}"></button></figure>`).join("")}
+              <button class="gallery-button" id="open-property-gallery" type="button">View all ${escapeHtml(images.length)} photos <span>↗</span></button>
             </div>
           </section>
 
@@ -133,6 +167,8 @@
             <article><header><span>Nightly average</span><i>04</i></header><strong>${money(nightly, listing.currency || "USD")}</strong><small>Before final fees</small></article>
           </section>
 
+          ${stayDetails.length ? `<section class="property-spec-strip atr-container" aria-label="Property essentials"><div class="property-spec-heading"><p class="section-kicker">Property essentials</p><span>Details found in the listing source</span></div><div class="property-spec-grid">${stayDetails.map((detail, index) => `<article><header><span>${escapeHtml(detail.label)}</span><i>0${index + 1}</i></header><strong>${escapeHtml(detail.value)}</strong><small>${escapeHtml(detail.note)}</small></article>`).join("")}</div></section>` : ""}
+
           <section class="property-content atr-container" id="stay-details">
             <div class="property-story">
               <div class="property-intro">
@@ -142,7 +178,8 @@
               </div>
               <div class="amenities-section">
                 <div class="property-section-heading"><div><p class="section-kicker">What this place offers</p><h2>Everything you need.<br><span>Clearly organized.</span></h2></div><p>Useful listing details grouped around how guests actually use the space.</p></div>
-                <div class="amenity-grid">${groups.map((group) => `<article><span>${group.code}</span><h3>${group.label}</h3><ul>${group.items.map((item) => `<li>✓ ${escapeHtml(item)}</li>`).join("")}</ul></article>`).join("")}</div>
+                <div class="amenity-grid amenity-grid-full">${amenityGroups.map((group) => `<article><span>${group.code}</span><h3>${escapeHtml(group.label)}</h3><ul>${group.items.slice(0, 4).map((item) => `<li>✓ ${escapeHtml(item)}</li>`).join("")}</ul>${group.items.length > 4 ? `<small class="amenity-more">+${group.items.length - 4} more</small>` : ""}</article>`).join("")}</div>
+                <button class="amenities-button" id="open-amenities" type="button">View all ${escapeHtml(amenities.length)} amenities <span>↗</span></button>
               </div>
               <div class="property-location">
                 <div class="location-heading"><div><p class="section-kicker">Where you'll be</p><h2>Close to the coast.<br><span>Rooted in Rincón.</span></h2></div><p>Approximate location supplied by the listing source. Exact directions are confirmed by the booking platform.</p></div>
@@ -160,7 +197,77 @@
             </aside>
           </section>
 
-          <section class="property-next"><div class="atr-container"><div><p class="section-kicker light">Know before you book</p><h2>One stay.<br><span>A clearer choice.</span></h2></div><p>AllTheRooms brings the listing, neighborhood and market signals together—so the room you choose fits the trip you actually want.</p><a class="light-link" href="/travel/puerto-rico/rincon/">Explore Rincón <span>↗</span></a></div></section>`;
+          <section class="property-next"><div class="atr-container"><div><p class="section-kicker light">Know before you book</p><h2>One stay.<br><span>A clearer choice.</span></h2></div><p>AllTheRooms brings the listing, neighborhood and market signals together—so the room you choose fits the trip you actually want.</p><a class="light-link" href="/travel/puerto-rico/rincon/">Explore Rincón <span>↗</span></a></div></section>
+
+          <div class="property-modal gallery-modal" id="property-gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title" hidden>
+            <div class="property-dialog gallery-dialog">
+              <header><div><p class="section-kicker">Property photos</p><h2 id="gallery-modal-title">${escapeHtml(title)}</h2></div><button class="modal-close" type="button" data-modal-close aria-label="Close photo gallery">×</button></header>
+              <div class="gallery-stage"><button class="gallery-arrow gallery-previous" type="button" aria-label="Previous photo">←</button><img id="gallery-active-image" alt=""><button class="gallery-arrow gallery-next" type="button" aria-label="Next photo">→</button></div>
+              <footer><div><strong id="gallery-count"></strong><span id="gallery-caption"></span></div><div class="gallery-thumbnails" id="gallery-thumbnails" aria-label="Choose a property photo"></div></footer>
+            </div>
+          </div>
+
+          <div class="property-modal amenities-modal" id="amenities-modal" role="dialog" aria-modal="true" aria-labelledby="amenities-modal-title" hidden>
+            <div class="property-dialog amenities-dialog">
+              <header><div><p class="section-kicker">What this place offers</p><h2 id="amenities-modal-title">All ${escapeHtml(amenities.length)} amenities</h2></div><button class="modal-close" type="button" data-modal-close aria-label="Close amenities">×</button></header>
+              <div class="amenities-dialog-grid">${amenityGroups.map((group) => `<section><span>${group.code}</span><h3>${escapeHtml(group.label)}</h3><ul>${group.items.map((item) => `<li><i>✓</i>${escapeHtml(item)}</li>`).join("")}</ul></section>`).join("")}</div>
+            </div>
+          </div>`;
+
+        const galleryModal = document.querySelector("#property-gallery-modal");
+        const amenitiesModal = document.querySelector("#amenities-modal");
+        const galleryImage = document.querySelector("#gallery-active-image");
+        const galleryCaption = document.querySelector("#gallery-caption");
+        const galleryCount = document.querySelector("#gallery-count");
+        const galleryThumbnails = document.querySelector("#gallery-thumbnails");
+        let currentGalleryIndex = 0;
+        let modalReturnFocus = null;
+
+        const renderGalleryImage = (requestedIndex) => {
+          currentGalleryIndex = (requestedIndex + images.length) % images.length;
+          const image = images[currentGalleryIndex];
+          galleryImage.src = httpUrl(image.url, "/property/living-room-1.jpg");
+          galleryImage.alt = image.caption || title;
+          galleryCaption.textContent = image.caption || title;
+          galleryCount.textContent = `${currentGalleryIndex + 1} / ${images.length}`;
+          galleryThumbnails.querySelectorAll("button").forEach((button, index) => button.setAttribute("aria-current", String(index === currentGalleryIndex)));
+        };
+        const buildGalleryThumbnails = () => {
+          if (galleryThumbnails.children.length) return;
+          galleryThumbnails.innerHTML = images.map((image, index) => `<button type="button" data-thumbnail-index="${index}" aria-label="View photo ${index + 1}"><img src="${safeUrl(image.url, "/property/living-room-1.jpg")}" alt="" loading="lazy"></button>`).join("");
+          galleryThumbnails.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => renderGalleryImage(Number(button.dataset.thumbnailIndex))));
+        };
+        const openModal = (modal, trigger) => {
+          modalReturnFocus = trigger;
+          modal.hidden = false;
+          document.body.classList.add("property-modal-open");
+          modal.querySelector(".modal-close").focus();
+        };
+        const closeModal = (modal) => {
+          modal.hidden = true;
+          document.body.classList.remove("property-modal-open");
+          modalReturnFocus?.focus();
+        };
+        const openGallery = (trigger, index = 0) => {
+          buildGalleryThumbnails();
+          renderGalleryImage(index);
+          openModal(galleryModal, trigger);
+        };
+
+        document.querySelector("#open-property-gallery").addEventListener("click", (event) => openGallery(event.currentTarget));
+        document.querySelectorAll(".gallery-photo-button").forEach((button) => button.addEventListener("click", () => openGallery(button, Number(button.dataset.galleryIndex))));
+        document.querySelector(".gallery-previous").addEventListener("click", () => renderGalleryImage(currentGalleryIndex - 1));
+        document.querySelector(".gallery-next").addEventListener("click", () => renderGalleryImage(currentGalleryIndex + 1));
+        document.querySelector("#open-amenities").addEventListener("click", (event) => openModal(amenitiesModal, event.currentTarget));
+        document.querySelectorAll("[data-modal-close]").forEach((button) => button.addEventListener("click", () => closeModal(button.closest(".property-modal"))));
+        document.querySelectorAll(".property-modal").forEach((modal) => modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(modal); }));
+        document.addEventListener("keydown", (event) => {
+          const openOverlay = document.querySelector(".property-modal:not([hidden])");
+          if (!openOverlay) return;
+          if (event.key === "Escape") closeModal(openOverlay);
+          if (openOverlay === galleryModal && event.key === "ArrowLeft") renderGalleryImage(currentGalleryIndex - 1);
+          if (openOverlay === galleryModal && event.key === "ArrowRight") renderGalleryImage(currentGalleryIndex + 1);
+        });
       })
       .catch(() => {
         document.querySelector("#property-app").innerHTML = `<section class="property-hero-v2"><div class="atr-container"><div class="property-utility-row"><a class="back-link" href="/prototype/host/market/rincon/">← Explore all Rincón stays</a></div><div class="property-title-row"><p class="section-kicker"><i></i>AllTheRooms property profile</p><h1>Property unavailable.</h1><p class="property-hero-summary">Return to the Rincón market explorer and choose another listing.</p></div></div></section>`;
