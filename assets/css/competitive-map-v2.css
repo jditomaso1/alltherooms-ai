@@ -415,8 +415,16 @@
 }
 
 .legend-host { background: var(--map-yellow); box-shadow: 0 0 0 2px var(--map-ink); }
-.legend-property { background: var(--map-blue); }
-.legend-direct { background: var(--map-green); }
+.legend-home { background: #3f6fff; }
+.legend-apartment { background: #ff5c59; }
+.legend-room { background: #21b8d8; }
+.legend-other { background: #8a6de9; }
+.map-legend .legend-direct-ring {
+  width: 9px;
+  height: 9px;
+  background: #fff;
+  border: 2px solid var(--map-green);
+}
 .map-legend .legend-contour { width: 12px; height: 2px; background: #8d6f52; border-radius: 0; box-shadow: 0 3px 0 #b79c7d; }
 
 .host-map-marker {

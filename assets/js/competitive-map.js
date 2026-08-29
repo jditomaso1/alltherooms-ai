@@ -148,6 +148,7 @@
         rating: Number(record.rating || 0),
         bedrooms: Number(record.bedrooms || 0),
         propertyType: record.propertyType,
+        propertyGroup: record.propertyGroup,
         hasDirectWebsite: Boolean(record.hasDirectWebsite)
       }
     };
@@ -364,10 +365,22 @@
       type: "circle",
       source: "properties",
       paint: {
-        "circle-color": ["case", ["==", ["get", "hasDirectWebsite"], true], "#1ea672", "#3f6fff"],
+        "circle-color": [
+          "match",
+          ["get", "propertyGroup"],
+          "home", "#3f6fff",
+          "apartment", "#ff5c59",
+          "room", "#21b8d8",
+          "#8a6de9"
+        ],
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 1.4, 11, 2, 13, 3.8, 16, 7],
-        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 9, .35, 12, .8, 16, 1.5],
-        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": [
+          "case",
+          ["==", ["get", "hasDirectWebsite"], true],
+          ["interpolate", ["linear"], ["zoom"], 9, 1, 12, 1.6, 16, 2.4],
+          ["interpolate", ["linear"], ["zoom"], 9, .35, 12, .8, 16, 1.5]
+        ],
+        "circle-stroke-color": ["case", ["==", ["get", "hasDirectWebsite"], true], "#1ea672", "#ffffff"],
         "circle-opacity": ["interpolate", ["linear"], ["zoom"], 9, .62, 12, .78, 16, .94]
       }
     });
