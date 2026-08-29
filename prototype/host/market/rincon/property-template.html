@@ -9,6 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=8">
   <link rel="shortcut icon" href="/favicon.svg?v=8">
   <link rel="stylesheet" href="/assets/css/property-template-v2.css">
+  <link rel="stylesheet" href="/assets/css/property-direct-booking.css">
   <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -51,9 +52,14 @@
     const propertyId = parts[parts.length - 1] === "index.html" ? parts[parts.length - 2] : parts[parts.length - 1];
 
     const propertyBucket = String(Number(String(propertyId).replace(/\D/g, "").slice(-2) || 0)).padStart(2, "0");
-    fetch(`/data/public/rincon-details/${propertyBucket}.json`)
-      .then((response) => { if (!response.ok) throw new Error("Listings unavailable"); return response.json(); })
-      .then((rows) => {
+    Promise.all([
+      fetch(`/data/public/rincon-details/${propertyBucket}.json`)
+        .then((response) => { if (!response.ok) throw new Error("Listings unavailable"); return response.json(); }),
+      fetch("/data/public/rincon-direct-websites.json")
+        .then((response) => response.ok ? response.json() : {})
+        .catch(() => ({})),
+    ])
+      .then(([rows, directWebsites]) => {
         const listing = rows.find((row) => String(row.id) === decodeURIComponent(propertyId));
         if (!listing) throw new Error("Property unavailable");
 
@@ -72,6 +78,10 @@
         const end = new Date(`${listing.checkOut}T00:00:00Z`);
         const nights = Math.max(1, Math.round((end - start) / 86400000) || 1);
         const nightly = total / nights;
+        const directWebsite = directWebsites[String(listing.id)] || "";
+        const directWebsiteAction = directWebsite ? `
+          <a class="primary-button booking-action direct-booking-action" href="${safeUrl(directWebsite)}" target="_blank" rel="nofollow noopener">Visit direct website <span>↗</span></a>
+          <small class="direct-booking-note">You’ll continue to the property’s own website for direct information and contact options.</small>` : "";
         const sourceDates = dateLabel(listing.checkIn) && dateLabel(listing.checkOut) ? `${dateLabel(listing.checkIn)}–${dateLabel(listing.checkOut)}` : "Current source dates";
         const signal = rating >= 4.9 ? "Exceptional guest signal" : rating >= 4.7 ? "Highly rated stay" : "Active Rincón listing";
         const amenities = listing.amenities || [];
@@ -146,6 +156,7 @@
               <div class="booking-confidence"><span><i></i> Live source quote</span><p>Price and availability may have changed since the source listing was captured.</p></div>
               <a class="primary-button booking-action" href="${safeUrl(listing.url)}" target="_blank" rel="nofollow sponsored noopener">View and book on Airbnb <span>↗</span></a>
               <small>You’ll continue to Airbnb to confirm current availability, fees and policies.</small>
+              ${directWebsiteAction}
               <div class="property-owner-link"><span>Own or manage this property?</span><a href="/prototype/host/">Open the Host toolkit <b>↗</b></a></div>
             </aside>
           </section>

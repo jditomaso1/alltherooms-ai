@@ -1,0 +1,18 @@
+.property-page-v2 .direct-booking-action {
+  color: var(--blue);
+  background: #fff;
+  border: 1px solid #b9c8f8;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.property-page-v2 .direct-booking-action:hover {
+  color: #fff;
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.property-page-v2 .booking-panel > small.direct-booking-note {
+  display: block;
+  line-height: 1.55;
+}
