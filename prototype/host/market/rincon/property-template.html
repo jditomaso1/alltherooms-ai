@@ -76,6 +76,14 @@
         const reviews = Number(listing.reviews || 0);
         const capacity = Number(listing.capacity || 0);
         const total = Number(listing.quotedPrice || 0);
+        const latitude = Number(listing.latitude);
+        const longitude = Number(listing.longitude);
+        const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
+        const approximateLatitude = hasCoordinates ? Number(latitude.toFixed(3)) : 0;
+        const approximateLongitude = hasCoordinates ? Number(longitude.toFixed(3)) : 0;
+        const mapBounds = hasCoordinates ? [approximateLongitude - 0.009, approximateLatitude - 0.006, approximateLongitude + 0.009, approximateLatitude + 0.006].map((value) => value.toFixed(6)).join(",") : "";
+        const mapEmbedUrl = hasCoordinates ? `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(mapBounds)}&layer=mapnik` : "";
+        const mapPageUrl = hasCoordinates ? `https://www.openstreetmap.org/?mlat=${approximateLatitude}&mlon=${approximateLongitude}#map=15/${approximateLatitude}/${approximateLongitude}` : "";
         const start = new Date(`${listing.checkIn}T00:00:00Z`);
         const end = new Date(`${listing.checkOut}T00:00:00Z`);
         const nights = Math.max(1, Math.round((end - start) / 86400000) || 1);
@@ -183,7 +191,7 @@
               </div>
               <div class="property-location">
                 <div class="location-heading"><div><p class="section-kicker">Where you'll be</p><h2>Close to the coast.<br><span>Rooted in Rincón.</span></h2></div><p>Approximate location supplied by the listing source. Exact directions are confirmed by the booking platform.</p></div>
-                <div class="location-map" role="img" aria-label="Approximate property location in Rincón"><div class="map-water">Caribbean Sea</div><i class="map-road road-one"></i><i class="map-road road-two"></i><i class="map-road road-three"></i><span class="map-place place-one">Rincón</span><span class="map-place place-two">Balneario</span><span class="map-place place-three">Plaza</span><div class="map-pin"><i></i>${escapeHtml(title)} area</div></div>
+                ${hasCoordinates ? `<div class="location-map real-location-map" aria-label="Approximate neighborhood map for ${escapeHtml(title)}"><iframe src="${safeUrl(mapEmbedUrl)}" title="Approximate neighborhood map for ${escapeHtml(title)}" loading="lazy" scrolling="no" tabindex="-1" referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="map-tone" aria-hidden="true"></div><div class="approximate-area" aria-hidden="true"><span></span></div><div class="map-pin"><i></i><span>${escapeHtml(title)} area</span></div><a class="map-open-link" href="${safeUrl(mapPageUrl)}" target="_blank" rel="noopener nofollow">Open larger map <b>↗</b></a><a class="map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></div>` : `<div class="location-map" role="img" aria-label="Approximate property location in Rincón"><div class="map-water">Caribbean Sea</div><i class="map-road road-one"></i><i class="map-road road-two"></i><i class="map-road road-three"></i><span class="map-place place-one">Rincón</span><span class="map-place place-two">Balneario</span><span class="map-place place-three">Plaza</span><div class="map-pin"><i></i>${escapeHtml(title)} area</div></div>`}
               </div>
             </div>
             <aside class="booking-panel" aria-label="Booking summary">
