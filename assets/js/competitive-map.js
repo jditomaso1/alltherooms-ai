@@ -303,9 +303,13 @@
   function setTerrainMode(enabled, options) {
     if (!map || !map.getSource("terrain-source")) return;
     terrainEnabled = Boolean(enabled);
+    map.setLayoutProperty("market-base", "visibility", terrainEnabled ? "none" : "visible");
+    map.setLayoutProperty("topographic-base", "visibility", terrainEnabled ? "visible" : "none");
+    map.setLayoutProperty("terrain-hillshade", "visibility", terrainEnabled ? "visible" : "none");
     map.setTerrain(terrainEnabled ? { source: "terrain-source", exaggeration: 1.16 } : null);
     elements.terrain.setAttribute("aria-pressed", terrainEnabled ? "true" : "false");
-    elements.terrain.querySelector("b").textContent = terrainEnabled ? "2D topographic" : "3D terrain";
+    elements.terrain.querySelector("b").textContent = terrainEnabled ? "Market view" : "Terrain view";
+    elements.terrain.closest(".competitive-map-stage").classList.toggle("is-terrain-mode", terrainEnabled);
     if (!options || options.move !== false) {
       map.easeTo({
         pitch: terrainEnabled ? 55 : 0,
@@ -331,7 +335,7 @@
     var url = new URL(window.location.href);
     ["lng", "lat", "z", "terrain"].forEach(function (key) { url.searchParams.delete(key); });
     window.history.replaceState({}, "", url);
-    showToast("Map returned to the 2D topographic view.");
+    showToast("Map returned to Market view.");
   }
 
   function createHostMarker(record) {
@@ -437,6 +441,13 @@
       style: {
         version: 8,
         sources: {
+          market: {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            maxzoom: 19,
+            attribution: "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>"
+          },
           topography: {
             type: "raster",
             tiles: [
@@ -464,26 +475,40 @@
             paint: { "background-color": "#dce9e7" }
           },
           {
+            id: "market-base",
+            type: "raster",
+            source: "market",
+            paint: {
+              "raster-saturation": -.82,
+              "raster-contrast": -.17,
+              "raster-brightness-min": .22,
+              "raster-brightness-max": .96,
+              "raster-opacity": .84
+            }
+          },
+          {
             id: "topographic-base",
             type: "raster",
             source: "topography",
+            layout: { "visibility": "none" },
             paint: {
-              "raster-saturation": -.16,
-              "raster-contrast": .06,
-              "raster-brightness-min": .08,
-              "raster-brightness-max": .98,
-              "raster-opacity": .97
+              "raster-saturation": -.24,
+              "raster-contrast": .02,
+              "raster-brightness-min": .12,
+              "raster-brightness-max": .97,
+              "raster-opacity": .94
             }
           },
           {
             id: "terrain-hillshade",
             type: "hillshade",
             source: "hillshade-source",
+            layout: { "visibility": "none" },
             paint: {
-              "hillshade-exaggeration": .34,
-              "hillshade-shadow-color": "rgba(18,42,50,.48)",
-              "hillshade-highlight-color": "rgba(255,250,229,.62)",
-              "hillshade-accent-color": "rgba(74,104,79,.34)"
+              "hillshade-exaggeration": .27,
+              "hillshade-shadow-color": "rgba(18,42,50,.42)",
+              "hillshade-highlight-color": "rgba(255,250,229,.56)",
+              "hillshade-accent-color": "rgba(74,104,79,.28)"
             }
           }
         ]

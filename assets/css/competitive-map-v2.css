@@ -399,6 +399,14 @@
   gap: 5px;
 }
 
+.map-legend .terrain-only {
+  display: none;
+}
+
+.competitive-map-stage.is-terrain-mode .map-legend .terrain-only {
+  display: inline-flex;
+}
+
 .map-legend i {
   display: block;
   width: 8px;

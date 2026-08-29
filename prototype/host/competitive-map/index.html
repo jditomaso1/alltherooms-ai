@@ -11,9 +11,9 @@
   <link rel="shortcut icon" href="/favicon.svg?v=8">
   <link rel="stylesheet" href="/_next/static/css/index.jyET6qeL.css">
   <link rel="stylesheet" href="/assets/vendor/maplibre/maplibre-gl.css?v=5.12.0">
-  <link rel="stylesheet" href="/assets/css/competitive-map-v2.css?v=4">
+  <link rel="stylesheet" href="/assets/css/competitive-map-v2.css?v=7">
   <script defer src="/assets/vendor/maplibre/maplibre-gl.js?v=5.12.0"></script>
-  <script defer src="/assets/js/competitive-map.js?v=6"></script>
+  <script defer src="/assets/js/competitive-map.js?v=7"></script>
 </head>
 <body>
   <div class="host-app-shell host-control-shell">
@@ -34,7 +34,7 @@
 
       <main class="host-page-main competitive-map-page">
         <header class="host-page-intro competitive-map-intro">
-          <div><p>Rincón, Puerto Rico · Complete market view</p><h2>See every stay around you.</h2><span>Explore all known Rincón properties against the coastline, contours, and mountain terrain surrounding Casa Brisa.</span></div>
+          <div><p>Rincón, Puerto Rico · Complete market view</p><h2>See every stay around you.</h2><span>Compare all known Rincón properties around Casa Brisa, then switch to Terrain view when the geography matters.</span></div>
           <button class="host-primary-action" id="save-map-view" type="button">Save this view <b>↗</b></button>
         </header>
 
@@ -58,12 +58,12 @@
           <div class="competitive-map-stage">
             <div id="competitive-map" aria-label="Interactive map of Rincón short-term rentals"></div>
             <div class="terrain-map-controls" aria-label="Map view controls">
-              <button id="terrain-toggle" type="button" aria-pressed="false"><i aria-hidden="true">▲</i><span><small>Map view</small><b>3D terrain</b></span></button>
+              <button id="terrain-toggle" type="button" aria-pressed="false"><i aria-hidden="true">▲</i><span><small>Map mode</small><b>Terrain view</b></span></button>
               <button id="reset-map-view" type="button">Reset view</button>
             </div>
             <div class="map-loading" id="map-loading"><i></i><strong>Loading the Rincón market…</strong><span>Preparing all property locations and filters.</span></div>
             <div class="map-error" id="map-error" hidden><strong>The map could not load.</strong><span>Please refresh the page to try again.</span></div>
-            <div class="map-legend" aria-label="Map legend"><span><i class="legend-host"></i>Casa Brisa</span><span><i class="legend-property"></i>Property</span><span><i class="legend-direct"></i>Direct website</span><span><i class="legend-contour"></i>Elevation contours</span></div>
+            <div class="map-legend" aria-label="Map legend"><span><i class="legend-host"></i>Casa Brisa</span><span><i class="legend-property"></i>Property</span><span><i class="legend-direct"></i>Direct website</span><span class="terrain-only"><i class="legend-contour"></i>Elevation contours</span></div>
           </div>
           <aside class="competitive-map-rail" aria-label="Competitive properties">
             <div class="competitive-rail-heading"><div><p>Competitive set</p><h3>Closest properties</h3></div><span id="rail-result-count">1,214 market records</span></div>
