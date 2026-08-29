@@ -18,8 +18,8 @@
       <a class="logo brand-lockup" href="/" aria-label="AllTheRooms home">
         <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>alltherooms</span>
       </a>
-      <nav aria-label="Main navigation"><a href="/travel/puerto-rico/rincon/">Guest</a><a href="/prototype/host/">Host toolkit</a><a href="/travel/puerto-rico/rincon/">Destinations</a></nav>
-      <div class="canonical-header-actions"><a class="host-sign-in" href="/prototype/host/">Host sign in</a><a class="nav-cta" href="/prototype/host/">Claim my property</a></div>
+      <nav class="canonical-main-nav" aria-label="Main navigation"><a href="/prototype/host/market/rincon/">Find a stay</a><a href="/travel/puerto-rico/rincon/">Destinations</a><a href="/#products">For hosts</a></nav>
+      <div class="canonical-header-actions"><a class="host-sign-in" href="/prototype/host/">Host sign in</a><a class="nav-cta" href="/claim-my-property/">Claim my property</a></div>
     </header>
 
     <main id="property-app">
@@ -50,7 +50,7 @@
     const parts = location.pathname.split("/").filter(Boolean);
     const propertyId = parts[parts.length - 1] === "index.html" ? parts[parts.length - 2] : parts[parts.length - 1];
 
-    fetch("/data/public/rincon-listings.json")
+    const propertyBucket = String(Number(String(propertyId).replace(/\\D/g, "").slice(-2) || 0)).padStart(2, "0");\n    fetch(`/data/public/rincon-details/${propertyBucket}.json`)
       .then((response) => { if (!response.ok) throw new Error("Listings unavailable"); return response.json(); })
       .then((rows) => {
         const listing = rows.find((row) => String(row.id) === decodeURIComponent(propertyId));
