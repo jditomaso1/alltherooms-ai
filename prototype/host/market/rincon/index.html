@@ -120,7 +120,7 @@ function render() {
     const rating = Number(item.rating || 0);
     const reviews = Number(item.reviews || 0);
     const reviewLabel = rating ? `★ ${escapeHtml(rating)} (${escapeHtml(reviews)})` : "New listing";
-    return `<a class="card" href="/prototype/host/market/rincon/properties/${encodeURIComponent(item.id)}/">
+    return `<a class="card" href="/prototype/host/market/rincon/properties/${encodeURIComponent(item.id)}/" target="_blank" rel="noopener">
       <div class="photo"><img loading="lazy" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}"></div>
       <div class="body">
         <span class="location">${escapeHtml(item.location)}</span>
