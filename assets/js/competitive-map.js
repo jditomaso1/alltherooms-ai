@@ -375,10 +375,12 @@
         ],
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 1.4, 11, 2, 13, 3.8, 16, 7],
         "circle-stroke-width": [
-          "case",
-          ["==", ["get", "hasDirectWebsite"], true],
-          ["interpolate", ["linear"], ["zoom"], 9, 1, 12, 1.6, 16, 2.4],
-          ["interpolate", ["linear"], ["zoom"], 9, .35, 12, .8, 16, 1.5]
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          9, ["case", ["==", ["get", "hasDirectWebsite"], true], 1, .35],
+          12, ["case", ["==", ["get", "hasDirectWebsite"], true], 1.6, .8],
+          16, ["case", ["==", ["get", "hasDirectWebsite"], true], 2.4, 1.5]
         ],
         "circle-stroke-color": ["case", ["==", ["get", "hasDirectWebsite"], true], "#1ea672", "#ffffff"],
         "circle-opacity": ["interpolate", ["linear"], ["zoom"], 9, .62, 12, .78, 16, .94]
