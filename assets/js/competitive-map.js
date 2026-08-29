@@ -11,7 +11,7 @@
   var HOST_PROPERTY_ID = "1731305794703529900";
   var HOST_CENTER = [-67.2455, 18.3185];
   var DEFAULT_CENTER = [HOST_CENTER[0], HOST_CENTER[1]];
-  var DEFAULT_ZOOM = 11.35;
+  var DEFAULT_ZOOM = 12;
   var LIST_LIMIT = 18;
   var money = new Intl.NumberFormat("en-US", {
     style: "currency",
