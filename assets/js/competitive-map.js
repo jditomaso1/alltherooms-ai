@@ -414,7 +414,7 @@
   }
 
   function initializeMap() {
-    if (!window.maplibregl || !window.maplibregl.supported()) {
+    if (!window.maplibregl || typeof window.maplibregl.Map !== "function") {
       throw new Error("Interactive maps are not supported in this browser.");
     }
     var params = new URLSearchParams(window.location.search);
