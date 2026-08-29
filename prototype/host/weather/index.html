@@ -1,2 +1,134 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/css/index.jyET6qeL.css" data-rsc-css-href="/_next/static/css/index.jyET6qeL.css" data-precedence="vite-rsc/importer-resources"/>
-<title>Local Weather | AllTheRooms Host</title><meta name="description" content="Host-focused weather forecasts and local alerts."><link rel="canonical" href="https://www.alltherooms.ai/prototype/host/weather/"><meta name="robots" content="noindex,follow"><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=8"><link rel="shortcut icon" href="/favicon.svg?v=8"></head><body><div class="host-app-shell host-control-shell"><aside class="host-sidebar"><div class="host-brand-plate"><a class="logo brand-lockup" href="/prototype/host/" aria-label="AllTheRooms Host home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>alltherooms</span></a></div><details class="property-switcher-menu"><summary class="property-switcher" aria-label="Choose active property"><span><small>Active property</small><strong>Casa Brisa · Rincón</strong></span><i aria-hidden="true">⌄</i></summary><div><a class="active" href="/prototype/host/weather/?property=casa-brisa"><span>Casa Brisa</span><small>Rincón, Puerto Rico</small></a><a class="" href="/prototype/host/weather/?property=villa-mar-azul"><span>Villa Mar Azul</span><small>Rincón, Puerto Rico</small></a><a class="" href="/prototype/host/weather/?property=sunset-studio"><span>Sunset Studio</span><small>Rincón, Puerto Rico</small></a></div></details><nav class="host-flat-nav" aria-label="Host control panel"><a class="" href="/prototype/host/?property=casa-brisa">Portfolio</a><a class="" href="/prototype/host/property-details/?property=casa-brisa">Property Details</a><a class="" href="/prototype/host/vrps-score/?property=casa-brisa">VRPS Score</a><a class="" href="/prototype/host/market-insights/?property=casa-brisa">Market Insights</a><a class="" href="/prototype/host/competitive-map/?property=casa-brisa">Competitive Map</a><a class="" href="/prototype/host/host-services/?property=casa-brisa">Host Services</a><a class="" href="/prototype/host/guest-experiences/?property=casa-brisa">Guest Experiences</a><a class="" href="/prototype/host/str-marketplace/?property=casa-brisa">STR Marketplace</a><a class="active" href="/prototype/host/weather/?property=casa-brisa">Local Weather</a><a class="" href="/prototype/host/explore-stays/?property=casa-brisa">Explore Stays</a><a class="" href="/prototype/host/guest-verification/?property=casa-brisa">Guest Verification</a><a class="" href="/prototype/host/listing-studio/?property=casa-brisa">My Property</a><a class="" href="/prototype/host/host-network/?property=casa-brisa">Host Network</a><a class="" href="/prototype/host/guest-inbox/?property=casa-brisa">Guest Inbox</a></nav><div class="host-sidebar-foot"><span>Host workspace · Rincón pilot</span><a href="/">← Return to website</a></div></aside><div class="host-workspace"><header class="workspace-header"><div><span class="mobile-brand"><a class="logo brand-lockup" href="/prototype/host/" aria-label="AllTheRooms home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>alltherooms</span></a></span><h1>Local Weather</h1></div><div><button type="button">Add property <span>+</span></button><span class="workspace-avatar">JD</span></div></header><main class="host-page-main weather-page"><header class="host-page-intro"><div><p>Rincón, Puerto Rico · Updated 10:42 AM</p><h2>Weather around the stay.</h2><span>A host-focused view of current conditions, guest-impacting forecasts, and local alerts.</span></div><button class="host-primary-action" type="button">Manage alerts <b>↗</b></button></header><section class="weather-grid"><article class="current-weather-card"><div><span>Rincón now</span><strong>84°</strong><h3>Mostly sunny</h3><p>Feels like 89° · High 86°</p></div><i>☀</i><dl><div><dt>Humidity</dt><dd>71%</dd></div><div><dt>Wind</dt><dd>ENE 12 mph</dd></div><div><dt>UV index</dt><dd>8 · High</dd></div></dl></article><article class="weather-map-card host-surface"><div class="weather-map-canvas"><span class="weather-land">RINCÓN</span><i class="radar-ring ring-one"></i><i class="radar-ring ring-two"></i><i class="weather-property-pin">⌂</i><div class="rain-cell cell-one"></div><div class="rain-cell cell-two"></div></div><footer><span><i></i> Light rain</span><span><i></i> Moderate</span><small>Radar · last 30 minutes</small></footer></article></section><section class="forecast-card host-surface"><div class="host-section-heading"><div><p>Seven-day outlook</p><h3>Plan the guest experience</h3></div></div> <div><article class="active"><span>Today</span><i>☀</i><strong>84°</strong><small>76°</small></article><article class=""><span>Sat</span><i>◒</i><strong>83°</strong><small>75°</small></article><article class=""><span>Sun</span><i>☂</i><strong>81°</strong><small>74°</small></article><article class=""><span>Mon</span><i>☀</i><strong>84°</strong><small>75°</small></article><article class=""><span>Tue</span><i>◒</i><strong>85°</strong><small>76°</small></article><article class=""><span>Wed</span><i>☀</i><strong>86°</strong><small>77°</small></article><article class=""><span>Thu</span><i>☂</i><strong>82°</strong><small>75°</small></article></div></section><section class="weather-alert host-surface"><i>!</i><div><span>Host advisory</span><strong>Brief heavy showers are possible Sunday afternoon.</strong><p>Consider sending arriving guests the covered-parking and backup beach-day recommendations.</p></div><button type="button">Create guest message</button></section></main></div></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Local Weather | AllTheRooms Host</title>
+  <meta name="description" content="Live Rincón weather, coastal conditions, alerts and host-ready operating guidance.">
+  <link rel="canonical" href="https://www.alltherooms.ai/prototype/host/weather/">
+  <meta name="robots" content="noindex,follow">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=8">
+  <link rel="shortcut icon" href="/favicon.svg?v=8">
+  <link rel="stylesheet" href="/_next/static/css/index.jyET6qeL.css">
+  <link rel="stylesheet" href="/assets/vendor/maplibre/maplibre-gl.css?v=5.12.0">
+  <link rel="stylesheet" href="/assets/css/local-weather-v2.css?v=1">
+  <script defer src="/assets/vendor/maplibre/maplibre-gl.js?v=5.12.0"></script>
+  <script defer src="/assets/js/local-weather.js?v=1"></script>
+</head>
+<body>
+  <div class="host-app-shell host-control-shell">
+    <aside class="host-sidebar">
+      <div class="host-brand-plate"><a class="logo brand-lockup" href="/prototype/host/" aria-label="AllTheRooms Host home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>alltherooms</span></a></div>
+      <details class="property-switcher-menu">
+        <summary class="property-switcher" aria-label="Choose active property"><span><small>Active property</small><strong>Casa Brisa · Rincón</strong></span><i aria-hidden="true">⌄</i></summary>
+        <div><a class="active" href="/prototype/host/weather/?property=casa-brisa"><span>Casa Brisa</span><small>Rincón, Puerto Rico</small></a><a href="/prototype/host/weather/?property=villa-mar-azul"><span>Villa Mar Azul</span><small>Rincón, Puerto Rico</small></a><a href="/prototype/host/weather/?property=sunset-studio"><span>Sunset Studio</span><small>Rincón, Puerto Rico</small></a></div>
+      </details>
+      <nav class="host-flat-nav" aria-label="Host control panel">
+        <a href="/prototype/host/?property=casa-brisa">Portfolio</a><a href="/prototype/host/property-details/?property=casa-brisa">Property Details</a><a href="/prototype/host/vrps-score/?property=casa-brisa">VRPS Score</a><a href="/prototype/host/market-insights/?property=casa-brisa">Market Insights</a><a href="/prototype/host/competitive-map/?property=casa-brisa">Competitive Map</a><a href="/prototype/host/host-services/?property=casa-brisa">Host Services</a><a href="/prototype/host/guest-experiences/?property=casa-brisa">Guest Experiences</a><a href="/prototype/host/str-marketplace/?property=casa-brisa">STR Marketplace</a><a class="active" href="/prototype/host/weather/?property=casa-brisa">Local Weather</a><a href="/prototype/host/explore-stays/?property=casa-brisa">Explore Stays</a><a href="/prototype/host/guest-verification/?property=casa-brisa">Guest Verification</a><a href="/prototype/host/listing-studio/?property=casa-brisa">My Property</a><a href="/prototype/host/host-network/?property=casa-brisa">Host Network</a><a href="/prototype/host/guest-inbox/?property=casa-brisa">Guest Inbox</a>
+      </nav>
+      <div class="host-sidebar-foot"><span>Host workspace · Rincón pilot</span><a href="/">← Return to website</a></div>
+    </aside>
+
+    <div class="host-workspace">
+      <header class="workspace-header"><div><span class="mobile-brand"><a class="logo brand-lockup" href="/prototype/host/" aria-label="AllTheRooms home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>alltherooms</span></a></span><h1>Local Weather</h1></div><div><button type="button">Add property <span>+</span></button><span class="workspace-avatar">JD</span></div></header>
+
+      <main class="host-page-main weather-live-page">
+        <header class="host-page-intro weather-live-intro">
+          <div>
+            <p>Rincón weather desk · Casa Brisa</p>
+            <h2>Know the weather.<br><span>Plan the stay.</span></h2>
+            <span>Live local conditions, the coastal outlook and practical guidance for arrivals, turnovers and guest plans.</span>
+          </div>
+          <div class="weather-intro-actions">
+            <span class="weather-live-status" id="weather-live-status"><i></i><b>Connecting live data</b></span>
+            <button class="weather-refresh" id="weather-refresh" type="button">Refresh <b>↻</b></button>
+          </div>
+        </header>
+
+        <section class="weather-alert-strip host-surface" id="weather-alert-strip" aria-live="polite">
+          <i class="weather-alert-icon" aria-hidden="true">✓</i>
+          <div><span id="weather-alert-label">Official weather alerts</span><strong id="weather-alert-headline">Checking the Rincón area…</strong><p id="weather-alert-copy">Connecting to the National Weather Service.</p></div>
+          <a id="weather-alert-link" href="https://www.weather.gov/sju/" target="_blank" rel="noopener">View NWS <b>↗</b></a>
+        </section>
+
+        <section class="weather-overview-grid">
+          <article class="weather-now-card" aria-labelledby="weather-now-title">
+            <header><div><span id="weather-now-title">Right now · Casa Brisa</span><b id="current-time">Local time</b></div><i id="current-icon" aria-hidden="true">◒</i></header>
+            <div class="weather-now-reading"><strong id="current-temp">--°</strong><span><b id="current-condition">Loading conditions</b><small id="current-feels">Feels like --°</small></span></div>
+            <dl class="weather-now-metrics">
+              <div><dt>Humidity</dt><dd id="current-humidity">--%</dd></div>
+              <div><dt>Wind</dt><dd id="current-wind">-- mph</dd></div>
+              <div><dt>Gusts</dt><dd id="current-gusts">-- mph</dd></div>
+              <div><dt>Rain chance</dt><dd id="current-rain">--%</dd></div>
+              <div><dt>UV index</dt><dd id="current-uv">--</dd></div>
+              <div><dt>Today</dt><dd id="current-range">--° / --°</dd></div>
+            </dl>
+            <footer><span id="current-summary">Live forecast is loading.</span><button id="copy-weather-note" type="button">Copy guest update</button></footer>
+          </article>
+
+          <section class="weather-host-desk host-surface" aria-labelledby="host-desk-title">
+            <header class="weather-section-heading"><div><p>Host impact</p><h3 id="host-desk-title">What matters today</h3></div><span>Next 12 hours</span></header>
+            <div class="weather-impact-grid" id="weather-impact-grid" aria-live="polite">
+              <article><i class="impact-blue">01</i><span><small>Turnover window</small><strong>Reading the forecast</strong><p>We’ll identify the clearest working window.</p></span></article>
+              <article><i class="impact-yellow">02</i><span><small>Outdoor readiness</small><strong>Checking sun + rain</strong><p>Pool, patio and beach guidance is loading.</p></span></article>
+              <article><i class="impact-coral">03</i><span><small>Guest arrival</small><strong>Reviewing conditions</strong><p>Arrival guidance will update automatically.</p></span></article>
+              <article><i class="impact-aqua">04</i><span><small>Storm watch</small><strong>Checking official alerts</strong><p>NWS alert status is loading.</p></span></article>
+            </div>
+          </section>
+        </section>
+
+        <section class="weather-hourly-section host-surface" aria-labelledby="hourly-title">
+          <header class="weather-section-heading"><div><p>Hourly forecast</p><h3 id="hourly-title">The next 24 hours</h3></div><span id="hourly-context">Rincón local time</span></header>
+          <div class="weather-hourly-track" id="weather-hourly-track" aria-live="polite">
+            <article class="is-now"><span>Now</span><i>◒</i><strong>--°</strong><small>--% rain</small><em>-- mph</em></article>
+          </div>
+        </section>
+
+        <section class="weather-detail-grid">
+          <article class="weather-daily-card host-surface" aria-labelledby="daily-title">
+            <header class="weather-section-heading"><div><p>Seven-day outlook</p><h3 id="daily-title">Plan the week</h3></div><span>High / low</span></header>
+            <div class="weather-daily-list" id="weather-daily-list" aria-live="polite"></div>
+          </article>
+
+          <article class="weather-coast-card" aria-labelledby="coast-title">
+            <header class="weather-section-heading weather-section-heading-dark"><div><p>Coastal conditions</p><h3 id="coast-title">The water off Rincón</h3></div><i aria-hidden="true">≈</i></header>
+            <div class="coast-primary"><span><small>Wave height</small><strong id="wave-height">-- ft</strong><em id="wave-direction">Direction --</em></span><span><small>Sea temperature</small><strong id="sea-temperature">--°</strong><em id="swell-summary">Swell loading</em></span></div>
+            <div class="coast-details"><span><small>Wave period</small><strong id="wave-period">-- sec</strong></span><span><small>Swell height</small><strong id="swell-height">-- ft</strong></span><span><small>Swell period</small><strong id="swell-period">-- sec</strong></span></div>
+            <div class="coast-outlook" id="coast-outlook"></div>
+            <footer>Marine forecast is for planning only—not navigation or water-safety decisions.</footer>
+          </article>
+        </section>
+
+        <section class="weather-map-card-live host-surface" aria-labelledby="weather-map-title">
+          <header class="weather-map-header">
+            <div class="weather-section-heading"><div><p>Live weather map</p><h3 id="weather-map-title">See what is moving around Rincón</h3></div></div>
+            <div class="weather-layer-tabs" role="group" aria-label="Weather map layer">
+              <button class="active" data-layer="rain" type="button" aria-pressed="true">Rain</button>
+              <button data-layer="wind" type="button" aria-pressed="false">Wind</button>
+              <button data-layer="cloud" type="button" aria-pressed="false">Clouds</button>
+              <button data-layer="temperature" type="button" aria-pressed="false">Temperature</button>
+              <button data-layer="marine" type="button" aria-pressed="false">Sea</button>
+              <button data-layer="alerts" type="button" aria-pressed="false">Alerts</button>
+            </div>
+          </header>
+          <div class="weather-map-stage">
+            <div id="local-weather-map" aria-label="Interactive live weather map centered on Casa Brisa"></div>
+            <div class="weather-map-key" id="weather-map-key"><span><i></i>Lower rain chance</span><b></b><span>Higher rain chance</span></div>
+            <div class="weather-map-property"><i></i><span><small>Active property</small><strong>Casa Brisa</strong></span></div>
+            <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading local conditions…</span></div>
+            <div class="weather-map-error" id="weather-map-error" hidden><strong>Live map data is unavailable.</strong><span>The forecast panels above are still available.</span></div>
+          </div>
+          <footer class="weather-map-footer"><span>Live forecast grid · no property clustering</span><a href="https://radar.weather.gov/" target="_blank" rel="noopener">Open official NOAA radar ↗</a></footer>
+        </section>
+
+        <footer class="weather-data-note">
+          <span id="weather-updated">Awaiting live update</span>
+          <p>Forecast data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Official alerts by the <a href="https://www.weather.gov/" target="_blank" rel="noopener">National Weather Service</a>. Map data © OpenStreetMap contributors.</p>
+        </footer>
+        <div class="weather-toast" id="weather-toast" role="status" aria-live="polite"></div>
+      </main>
+    </div>
+  </div>
+  <noscript><p class="weather-noscript">JavaScript is required for live weather updates. Visit weather.gov for current Rincón conditions.</p></noscript>
+</body>
+</html>
