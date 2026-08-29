@@ -2,6 +2,8 @@
   "use strict";
 
   var DATA_URL = "/data/public/rincon-map-listings.json";
+  var BOUNDARY_URL = "/data/public/rincon-municipio-boundary.geojson";
+  var BOUNDARY_LABEL_CENTER = [-67.2507864, 18.3390275];
   var HOST_PROPERTY_ID = "1731305794703529900";
   var HOST_CENTER = [-67.2455, 18.3185];
   var DEFAULT_CENTER = [HOST_CENTER[0], HOST_CENTER[1]];
@@ -20,6 +22,7 @@
   var selectedRecord = null;
   var map = null;
   var hostMarker = null;
+  var boundaryLabel = null;
   var hoverPopup = null;
   var toastTimer = null;
   var terrainEnabled = false;
@@ -354,7 +357,45 @@
       .addTo(map);
   }
 
+  function createBoundaryLabel() {
+    if (boundaryLabel) return;
+    var labelElement = document.createElement("div");
+    labelElement.className = "municipio-boundary-label";
+    labelElement.textContent = "Rincón Municipio";
+    boundaryLabel = new window.maplibregl.Marker({ element: labelElement, anchor: "center" })
+      .setLngLat(BOUNDARY_LABEL_CENTER)
+      .addTo(map);
+  }
+
   function addMapData() {
+    map.addSource("rincon-boundary", {
+      type: "geojson",
+      data: BOUNDARY_URL,
+      attribution: "Boundary: U.S. Census Bureau"
+    });
+
+    map.addLayer({
+      id: "rincon-boundary-fill",
+      type: "fill",
+      source: "rincon-boundary",
+      paint: {
+        "fill-color": "#3f6fff",
+        "fill-opacity": .055
+      }
+    });
+
+    map.addLayer({
+      id: "rincon-boundary-line",
+      type: "line",
+      source: "rincon-boundary",
+      paint: {
+        "line-color": "#071c38",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1.2, 12, 2, 16, 3],
+        "line-opacity": .82,
+        "line-dasharray": [4, 2]
+      }
+    });
+
     map.addSource("properties", {
       type: "geojson",
       data: featureCollection(visibleRecords)
@@ -429,6 +470,7 @@
     });
 
     var host = recordById.get(HOST_PROPERTY_ID);
+    createBoundaryLabel();
     createHostMarker(host);
     if (host) selectProperty(host, { move: false });
     if (new URLSearchParams(window.location.search).get("terrain") === "1") {
