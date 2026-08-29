@@ -352,37 +352,19 @@
   function addMapData() {
     map.addSource("properties", {
       type: "geojson",
-      data: featureCollection(visibleRecords),
-      cluster: true,
-      clusterMaxZoom: 14,
-      clusterRadius: 44
-    });
-
-    map.addLayer({
-      id: "property-clusters",
-      type: "circle",
-      source: "properties",
-      filter: ["has", "point_count"],
-      paint: {
-        "circle-color": ["step", ["get", "point_count"], "#8da8ff", 25, "#5e83ff", 90, "#3f6fff", 250, "#173fba"],
-        "circle-radius": ["step", ["get", "point_count"], 16, 25, 21, 90, 27, 250, 34],
-        "circle-stroke-width": 3,
-        "circle-stroke-color": "rgba(255,255,255,.92)",
-        "circle-opacity": .9
-      }
+      data: featureCollection(visibleRecords)
     });
 
     map.addLayer({
       id: "property-points",
       type: "circle",
       source: "properties",
-      filter: ["!", ["has", "point_count"]],
       paint: {
         "circle-color": ["case", ["==", ["get", "hasDirectWebsite"], true], "#1ea672", "#3f6fff"],
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 3.5, 13, 5, 16, 7.5],
-        "circle-stroke-width": 1.6,
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 1.4, 11, 2, 13, 3.8, 16, 7],
+        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 9, .35, 12, .8, 16, 1.5],
         "circle-stroke-color": "#ffffff",
-        "circle-opacity": .93
+        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 9, .62, 12, .78, 16, .94]
       }
     });
 
@@ -401,15 +383,6 @@
         "circle-stroke-width": 3,
         "circle-stroke-color": "#ffbd35"
       }
-    });
-
-    map.on("click", "property-clusters", function (event) {
-      var feature = event.features && event.features[0];
-      if (!feature) return;
-      var source = map.getSource("properties");
-      Promise.resolve(source.getClusterExpansionZoom(feature.properties.cluster_id)).then(function (zoom) {
-        map.easeTo({ center: feature.geometry.coordinates, zoom: zoom, duration: 500 });
-      });
     });
 
     map.on("click", "property-points", function (event) {
@@ -434,14 +407,6 @@
       map.getCanvas().style.cursor = "";
       if (hoverPopup) hoverPopup.remove();
       hoverPopup = null;
-    });
-
-    map.on("mouseenter", "property-clusters", function () {
-      map.getCanvas().style.cursor = "zoom-in";
-    });
-
-    map.on("mouseleave", "property-clusters", function () {
-      map.getCanvas().style.cursor = "";
     });
 
     var host = recordById.get(HOST_PROPERTY_ID);
