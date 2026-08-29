@@ -22,6 +22,7 @@
   var hostMarker = null;
   var hoverPopup = null;
   var toastTimer = null;
+  var terrainEnabled = false;
 
   var elements = {
     loading: document.getElementById("map-loading"),
@@ -41,6 +42,8 @@
     list: document.getElementById("competitive-property-list"),
     selected: document.getElementById("selected-map-property"),
     save: document.getElementById("save-map-view"),
+    terrain: document.getElementById("terrain-toggle"),
+    resetView: document.getElementById("reset-map-view"),
     toast: document.getElementById("map-toast")
   };
 
@@ -297,6 +300,40 @@
     if (map) map.easeTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 500 });
   }
 
+  function setTerrainMode(enabled, options) {
+    if (!map || !map.getSource("terrain-source")) return;
+    terrainEnabled = Boolean(enabled);
+    map.setTerrain(terrainEnabled ? { source: "terrain-source", exaggeration: 1.16 } : null);
+    elements.terrain.setAttribute("aria-pressed", terrainEnabled ? "true" : "false");
+    elements.terrain.querySelector("b").textContent = terrainEnabled ? "2D topographic" : "3D terrain";
+    if (!options || options.move !== false) {
+      map.easeTo({
+        pitch: terrainEnabled ? 55 : 0,
+        bearing: terrainEnabled ? -18 : 0,
+        zoom: terrainEnabled ? Math.max(map.getZoom(), 11.85) : map.getZoom(),
+        duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 700
+      });
+    } else {
+      map.jumpTo({ pitch: terrainEnabled ? 55 : 0, bearing: terrainEnabled ? -18 : 0 });
+    }
+  }
+
+  function resetMapView() {
+    if (!map) return;
+    setTerrainMode(false, { move: false });
+    map.easeTo({
+      center: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
+      pitch: 0,
+      bearing: 0,
+      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650
+    });
+    var url = new URL(window.location.href);
+    ["lng", "lat", "z", "terrain"].forEach(function (key) { url.searchParams.delete(key); });
+    window.history.replaceState({}, "", url);
+    showToast("Map returned to the 2D topographic view.");
+  }
+
   function createHostMarker(record) {
     if (!record || hostMarker) return;
     var markerElement = document.createElement("button");
@@ -410,6 +447,9 @@
     var host = recordById.get(HOST_PROPERTY_ID);
     createHostMarker(host);
     if (host) selectProperty(host, { move: false });
+    if (new URLSearchParams(window.location.search).get("terrain") === "1") {
+      setTerrainMode(true, { move: false });
+    }
     elements.loading.classList.add("is-ready");
   }
 
@@ -429,33 +469,71 @@
       style: {
         version: 8,
         sources: {
-          osm: {
+          topography: {
             type: "raster",
-            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tiles: [
+              "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
+              "https://b.tile.opentopomap.org/{z}/{x}/{y}.png",
+              "https://c.tile.opentopomap.org/{z}/{x}/{y}.png"
+            ],
             tileSize: 256,
-            attribution: "© OpenStreetMap contributors"
+            maxzoom: 17,
+            attribution: "Map data © <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>, SRTM | Map style © <a href='https://opentopomap.org'>OpenTopoMap</a> (CC-BY-SA)"
+          },
+          "terrain-source": {
+            type: "raster-dem",
+            url: "https://tiles.mapterhorn.com/tilejson.json"
+          },
+          "hillshade-source": {
+            type: "raster-dem",
+            url: "https://tiles.mapterhorn.com/tilejson.json"
           }
         },
-        layers: [{
-          id: "osm-base",
-          type: "raster",
-          source: "osm",
-          paint: {
-            "raster-saturation": -.58,
-            "raster-contrast": -.09,
-            "raster-brightness-min": .16,
-            "raster-brightness-max": .95,
-            "raster-opacity": .94
+        layers: [
+          {
+            id: "map-background",
+            type: "background",
+            paint: { "background-color": "#dce9e7" }
+          },
+          {
+            id: "topographic-base",
+            type: "raster",
+            source: "topography",
+            paint: {
+              "raster-saturation": -.16,
+              "raster-contrast": .06,
+              "raster-brightness-min": .08,
+              "raster-brightness-max": .98,
+              "raster-opacity": .97
+            }
+          },
+          {
+            id: "terrain-hillshade",
+            type: "hillshade",
+            source: "hillshade-source",
+            paint: {
+              "hillshade-exaggeration": .34,
+              "hillshade-shadow-color": "rgba(18,42,50,.48)",
+              "hillshade-highlight-color": "rgba(255,250,229,.62)",
+              "hillshade-accent-color": "rgba(74,104,79,.34)"
+            }
           }
-        }]
+        ]
       },
       center: initialCenter,
       zoom: initialZoom,
       minZoom: 9.3,
       maxZoom: 18,
+      maxPitch: 60,
+      dragRotate: false,
+      touchPitch: false,
+      pitchWithRotate: false,
       maxBounds: [[-67.43, 18.12], [-67.02, 18.55]],
       attributionControl: false
     });
+    if (map.touchZoomRotate && typeof map.touchZoomRotate.disableRotation === "function") {
+      map.touchZoomRotate.disableRotation();
+    }
     map.addControl(new window.maplibregl.NavigationControl({ showCompass: false }), "top-right");
     map.addControl(new window.maplibregl.AttributionControl({ compact: true }), "bottom-right");
     map.on("load", addMapData);
@@ -478,6 +556,10 @@
       applyFilters();
     });
     elements.reset.addEventListener("click", resetFilters);
+    elements.terrain.addEventListener("click", function () {
+      setTerrainMode(!terrainEnabled);
+    });
+    elements.resetView.addEventListener("click", resetMapView);
 
     document.addEventListener("click", function (event) {
       var compareButton = event.target.closest("[data-compare-id]");
@@ -496,6 +578,8 @@
         url.searchParams.set("lng", center.lng.toFixed(5));
         url.searchParams.set("lat", center.lat.toFixed(5));
         url.searchParams.set("z", map.getZoom().toFixed(2));
+        if (terrainEnabled) url.searchParams.set("terrain", "1");
+        else url.searchParams.delete("terrain");
         window.history.replaceState({}, "", url);
       }
       if (navigator.clipboard && window.isSecureContext) {

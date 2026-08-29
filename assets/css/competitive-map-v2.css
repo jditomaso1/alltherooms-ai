@@ -235,6 +235,95 @@
   font-size: 9px;
 }
 
+.terrain-map-controls {
+  z-index: 6;
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  display: flex;
+  align-items: stretch;
+  gap: 7px;
+}
+
+.terrain-map-controls button {
+  color: var(--map-ink);
+  background: rgba(255, 255, 255, .95);
+  border: 1px solid rgba(7, 28, 56, .12);
+  border-radius: 9px;
+  box-shadow: 0 10px 28px rgba(7, 28, 56, .15);
+  backdrop-filter: blur(10px);
+}
+
+#terrain-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 118px;
+  padding: 8px 11px;
+  text-align: left;
+}
+
+#terrain-toggle > i {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  color: #456b5e;
+  background: #e6eee9;
+  border-radius: 7px;
+  font-size: 10px;
+  font-style: normal;
+  transition: transform .3s;
+}
+
+#terrain-toggle > span {
+  display: grid;
+}
+
+#terrain-toggle small {
+  color: #8390a2;
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+#terrain-toggle b {
+  margin-top: 2px;
+  font-size: 8px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+#terrain-toggle[aria-pressed="true"] {
+  color: #fff;
+  background: var(--map-ink);
+  border-color: var(--map-ink);
+}
+
+#terrain-toggle[aria-pressed="true"] > i {
+  color: var(--map-ink);
+  background: var(--map-yellow);
+  transform: perspective(24px) rotateX(24deg);
+}
+
+#terrain-toggle[aria-pressed="true"] small {
+  color: #8fa6c0;
+}
+
+#reset-map-view {
+  padding: 0 12px;
+  color: #536176;
+  font-size: 7px;
+  font-weight: 850;
+}
+
+.terrain-map-controls button:hover,
+.terrain-map-controls button:focus-visible {
+  border-color: #9aafff;
+  outline: none;
+}
+
 .map-loading,
 .map-error {
   z-index: 8;
@@ -291,6 +380,7 @@
   left: 13px;
   bottom: 23px;
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   padding: 9px 11px;
   color: #4f5d72;
@@ -319,6 +409,7 @@
 .legend-host { background: var(--map-yellow); box-shadow: 0 0 0 2px var(--map-ink); }
 .legend-property { background: var(--map-blue); }
 .legend-direct { background: var(--map-green); }
+.map-legend .legend-contour { width: 12px; height: 2px; background: #8d6f52; border-radius: 0; box-shadow: 0 3px 0 #b79c7d; }
 
 .host-map-marker {
   display: flex;
@@ -694,8 +785,12 @@
   .map-legend {
     right: 12px;
     left: 12px;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 8px 14px;
   }
+
+  .terrain-map-controls { right: 51px; }
+  #terrain-toggle { flex: 1; }
 
   .competitive-property-list {
     grid-template-columns: 1fr;
