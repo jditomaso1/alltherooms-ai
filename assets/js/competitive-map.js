@@ -31,6 +31,7 @@
   var toastTimer = null;
   var terrainEnabled = false;
   var boundariesVisible = true;
+  var filterSelectControllers = [];
 
   var elements = {
     loading: document.getElementById("map-loading"),
@@ -211,6 +212,156 @@
     if (valid) select.value = value;
   }
 
+  function closeFilterSelect(controller, restoreFocus) {
+    if (!controller || controller.menu.hidden) return;
+    controller.menu.hidden = true;
+    controller.field.classList.remove("is-open");
+    controller.trigger.setAttribute("aria-expanded", "false");
+    if (restoreFocus) controller.trigger.focus();
+  }
+
+  function closeFilterSelects(except) {
+    filterSelectControllers.forEach(function (controller) {
+      if (controller !== except) closeFilterSelect(controller, false);
+    });
+  }
+
+  function syncFilterSelect(controller) {
+    var selectedOption = controller.select.options[controller.select.selectedIndex];
+    if (!selectedOption) return;
+    controller.value.textContent = selectedOption.textContent;
+    controller.trigger.setAttribute("aria-label", controller.label + ": " + selectedOption.textContent);
+    controller.optionButtons.forEach(function (button) {
+      button.setAttribute("aria-selected", button.dataset.value === controller.select.value ? "true" : "false");
+    });
+  }
+
+  function syncFilterSelects() {
+    filterSelectControllers.forEach(syncFilterSelect);
+  }
+
+  function focusFilterOption(controller, index) {
+    var boundedIndex = Math.max(0, Math.min(index, controller.optionButtons.length - 1));
+    controller.optionButtons[boundedIndex].focus();
+  }
+
+  function openFilterSelect(controller, focusIndex) {
+    closeFilterSelects(controller);
+    controller.menu.hidden = false;
+    controller.field.classList.add("is-open");
+    controller.trigger.setAttribute("aria-expanded", "true");
+    syncFilterSelect(controller);
+    if (Number.isInteger(focusIndex)) focusFilterOption(controller, focusIndex);
+  }
+
+  function upgradeFilterSelect(select) {
+    var field = select.closest(".filter-select-field");
+    var fieldLabel = field.querySelector("span").textContent.trim();
+    var menuId = select.id + "-menu";
+    var trigger = document.createElement("button");
+    var value = document.createElement("span");
+    var chevron = document.createElement("i");
+    var menu = document.createElement("div");
+    var controller = {
+      select: select,
+      field: field,
+      label: fieldLabel,
+      trigger: trigger,
+      value: value,
+      menu: menu,
+      optionButtons: []
+    };
+
+    select.tabIndex = -1;
+    select.setAttribute("aria-hidden", "true");
+    trigger.type = "button";
+    trigger.className = "filter-select-trigger";
+    trigger.setAttribute("aria-haspopup", "listbox");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-controls", menuId);
+    value.className = "filter-select-value";
+    chevron.className = "filter-select-chevron";
+    chevron.setAttribute("aria-hidden", "true");
+    chevron.textContent = "⌄";
+    trigger.append(value, chevron);
+
+    menu.id = menuId;
+    menu.className = "filter-select-menu";
+    menu.setAttribute("role", "listbox");
+    menu.setAttribute("aria-label", fieldLabel);
+    menu.hidden = true;
+
+    Array.prototype.forEach.call(select.options, function (option, index) {
+      var optionButton = document.createElement("button");
+      var check = document.createElement("i");
+      var optionLabel = document.createElement("span");
+      optionButton.type = "button";
+      optionButton.className = "filter-select-option";
+      optionButton.dataset.value = option.value;
+      optionButton.dataset.index = String(index);
+      optionButton.setAttribute("role", "option");
+      optionButton.tabIndex = -1;
+      check.setAttribute("aria-hidden", "true");
+      check.textContent = "✓";
+      optionLabel.textContent = option.textContent;
+      optionButton.append(check, optionLabel);
+      optionButton.addEventListener("click", function () {
+        select.value = option.value;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        closeFilterSelect(controller, true);
+      });
+      optionButton.addEventListener("keydown", function (event) {
+        var currentIndex = Number(optionButton.dataset.index);
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          focusFilterOption(controller, currentIndex + 1);
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          focusFilterOption(controller, currentIndex - 1);
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          focusFilterOption(controller, 0);
+        } else if (event.key === "End") {
+          event.preventDefault();
+          focusFilterOption(controller, controller.optionButtons.length - 1);
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          closeFilterSelect(controller, true);
+        } else if (event.key === "Tab") {
+          closeFilterSelect(controller, false);
+        }
+      });
+      controller.optionButtons.push(optionButton);
+      menu.appendChild(optionButton);
+    });
+
+    trigger.addEventListener("click", function () {
+      if (menu.hidden) openFilterSelect(controller);
+      else closeFilterSelect(controller, false);
+    });
+    trigger.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        var selectedIndex = Math.max(0, select.selectedIndex);
+        openFilterSelect(controller, event.key === "ArrowDown" ? selectedIndex : selectedIndex);
+      } else if (event.key === "Escape") {
+        closeFilterSelect(controller, false);
+      }
+    });
+    select.addEventListener("change", function () { syncFilterSelect(controller); });
+    field.append(trigger, menu);
+    filterSelectControllers.push(controller);
+    syncFilterSelect(controller);
+  }
+
+  function upgradeFilterSelects() {
+    [elements.guests, elements.bedrooms, elements.price, elements.rating, elements.type, elements.feature]
+      .forEach(upgradeFilterSelect);
+    document.addEventListener("click", function (event) {
+      if (!event.target.closest(".filter-select-field")) closeFilterSelects();
+    });
+  }
+
   function renderSelected(record) {
     if (!record || !elements.selected) return;
     var isCompared = comparisons.has(record.id);
@@ -306,6 +457,7 @@
     elements.type.value = "all";
     elements.feature.value = "all";
     elements.direct.setAttribute("aria-pressed", "false");
+    syncFilterSelects();
     applyFilters();
     if (map) map.easeTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 500 });
   }
@@ -694,6 +846,7 @@
   }
 
   hydrateFiltersFromUrl();
+  upgradeFilterSelects();
   bindControls();
   fetch(DATA_URL, { credentials: "same-origin" })
     .then(function (response) {

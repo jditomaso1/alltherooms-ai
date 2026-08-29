@@ -11,9 +11,9 @@
   <link rel="shortcut icon" href="/favicon.svg?v=8">
   <link rel="stylesheet" href="/_next/static/css/index.jyET6qeL.css">
   <link rel="stylesheet" href="/assets/vendor/maplibre/maplibre-gl.css?v=5.12.0">
-  <link rel="stylesheet" href="/assets/css/competitive-map-v2.css?v=10">
+  <link rel="stylesheet" href="/assets/css/competitive-map-v2.css?v=11">
   <script defer src="/assets/vendor/maplibre/maplibre-gl.js?v=5.12.0"></script>
-  <script defer src="/assets/js/competitive-map.js?v=12"></script>
+  <script defer src="/assets/js/competitive-map.js?v=13"></script>
 </head>
 <body>
   <div class="host-app-shell host-control-shell">
@@ -44,12 +44,12 @@
             <div class="map-result-summary"><strong id="result-count">1,214</strong><span>properties shown</span><i></i><b id="comparison-count">0 selected</b></div>
           </div>
           <div class="competitive-filter-grid">
-            <label><span>Guests</span><select id="filter-guests"><option value="0">Any capacity</option><option value="2">2+ guests</option><option value="4">4+ guests</option><option value="6">6+ guests</option><option value="8">8+ guests</option><option value="12">12+ guests</option></select></label>
-            <label><span>Bedrooms</span><select id="filter-bedrooms"><option value="0">Any bedrooms</option><option value="1">1+ bedrooms</option><option value="2">2+ bedrooms</option><option value="3">3+ bedrooms</option><option value="4">4+ bedrooms</option><option value="5">5+ bedrooms</option></select></label>
-            <label><span>Nightly price</span><select id="filter-price"><option value="all">Any price</option><option value="0-150">Under $150</option><option value="150-250">$150–$250</option><option value="250-350">$250–$350</option><option value="350-99999">$350+</option></select></label>
-            <label><span>Rating</span><select id="filter-rating"><option value="0">Any rating</option><option value="4.5">4.5+</option><option value="4.8">4.8+</option><option value="4.9">4.9+</option></select></label>
-            <label><span>Property type</span><select id="filter-type"><option value="all">All property types</option><option value="home">Homes & villas</option><option value="apartment">Apartments & condos</option><option value="room">Private rooms</option><option value="other">Other stays</option></select></label>
-            <label><span>Feature</span><select id="filter-feature"><option value="all">Any feature</option><option value="pool">Pool</option><option value="beach">Beach access</option><option value="hot-tub">Hot tub</option><option value="pets">Pet-friendly</option><option value="parking">Parking</option><option value="air-conditioning">Air conditioning</option></select></label>
+            <div class="filter-select-field"><span>Guests</span><select id="filter-guests"><option value="0">Any capacity</option><option value="2">2+ guests</option><option value="4">4+ guests</option><option value="6">6+ guests</option><option value="8">8+ guests</option><option value="12">12+ guests</option></select></div>
+            <div class="filter-select-field"><span>Bedrooms</span><select id="filter-bedrooms"><option value="0">Any bedrooms</option><option value="1">1+ bedrooms</option><option value="2">2+ bedrooms</option><option value="3">3+ bedrooms</option><option value="4">4+ bedrooms</option><option value="5">5+ bedrooms</option></select></div>
+            <div class="filter-select-field"><span>Nightly price</span><select id="filter-price"><option value="all">Any price</option><option value="0-150">Under $150</option><option value="150-250">$150–$250</option><option value="250-350">$250–$350</option><option value="350-99999">$350+</option></select></div>
+            <div class="filter-select-field"><span>Rating</span><select id="filter-rating"><option value="0">Any rating</option><option value="4.5">4.5+</option><option value="4.8">4.8+</option><option value="4.9">4.9+</option></select></div>
+            <div class="filter-select-field"><span>Property type</span><select id="filter-type"><option value="all">All property types</option><option value="home">Homes &amp; villas</option><option value="apartment">Apartments &amp; condos</option><option value="room">Private rooms</option><option value="other">Other stays</option></select></div>
+            <div class="filter-select-field"><span>Feature</span><select id="filter-feature"><option value="all">Any feature</option><option value="pool">Pool</option><option value="beach">Beach access</option><option value="hot-tub">Hot tub</option><option value="pets">Pet-friendly</option><option value="parking">Parking</option><option value="air-conditioning">Air conditioning</option></select></div>
             <button class="filter-toggle" id="filter-direct" type="button" aria-pressed="false"><i></i>Direct website</button><button class="filter-reset" id="reset-filters" type="button">Reset filters</button>
           </div>
         </section>
