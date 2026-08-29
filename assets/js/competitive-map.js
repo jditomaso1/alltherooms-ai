@@ -4,7 +4,7 @@
   var DATA_URL = "/data/public/rincon-map-listings.json";
   var HOST_PROPERTY_ID = "1731305794703529900";
   var HOST_CENTER = [-67.2455, 18.3185];
-  var DEFAULT_CENTER = [-67.2505, 18.3295];
+  var DEFAULT_CENTER = [HOST_CENTER[0], HOST_CENTER[1]];
   var DEFAULT_ZOOM = 11.35;
   var LIST_LIMIT = 18;
   var money = new Intl.NumberFormat("en-US", {
@@ -423,10 +423,13 @@
       throw new Error("Interactive maps are not supported in this browser.");
     }
     var params = new URLSearchParams(window.location.search);
-    var savedLng = Number(params.get("lng"));
-    var savedLat = Number(params.get("lat"));
+    var savedLngValue = params.get("lng");
+    var savedLatValue = params.get("lat");
+    var savedLng = Number(savedLngValue);
+    var savedLat = Number(savedLatValue);
     var savedZoom = Number(params.get("z"));
-    var initialCenter = Number.isFinite(savedLng) && Number.isFinite(savedLat) ? [savedLng, savedLat] : DEFAULT_CENTER;
+    var hasSavedCenter = savedLngValue !== null && savedLatValue !== null && Number.isFinite(savedLng) && Number.isFinite(savedLat);
+    var initialCenter = hasSavedCenter ? [savedLng, savedLat] : DEFAULT_CENTER;
     var initialZoom = Number.isFinite(savedZoom) && savedZoom > 0 ? savedZoom : DEFAULT_ZOOM;
 
     map = new window.maplibregl.Map({
