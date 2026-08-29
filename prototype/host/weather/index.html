@@ -101,9 +101,10 @@
 
         <section class="weather-map-card-live host-surface" aria-labelledby="weather-map-title">
           <header class="weather-map-header">
-            <div class="weather-section-heading"><div><p>Live weather map</p><h3 id="weather-map-title">See what is moving around Rincón</h3></div></div>
+            <div class="weather-section-heading"><div><p>NOAA weather map</p><h3 id="weather-map-title">See the atmosphere over Rincón</h3></div></div>
             <div class="weather-layer-tabs" role="group" aria-label="Weather map layer">
-              <button class="active" data-layer="rain" type="button" aria-pressed="true">Rain</button>
+              <button class="active" data-layer="satellite" type="button" aria-pressed="true">Satellite</button>
+              <button data-layer="radar" type="button" aria-pressed="false">Radar</button>
               <button data-layer="wind" type="button" aria-pressed="false">Wind</button>
               <button data-layer="cloud" type="button" aria-pressed="false">Clouds</button>
               <button data-layer="temperature" type="button" aria-pressed="false">Temperature</button>
@@ -113,17 +114,18 @@
           </header>
           <div class="weather-map-stage">
             <div id="local-weather-map" aria-label="Interactive live weather map centered on Casa Brisa"></div>
-            <div class="weather-map-key" id="weather-map-key"><span><i></i>Lower rain chance</span><b></b><span>Higher rain chance</span></div>
+            <div class="weather-map-key" id="weather-map-key" data-layer="satellite"><span><i></i>Colder cloud tops</span><b></b><span>Warmer / clearer</span></div>
             <div class="weather-map-property"><i></i><span><small>Active property</small><strong>Casa Brisa</strong></span></div>
-            <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading local conditions…</span></div>
+            <div class="weather-map-source" id="weather-map-source"><i></i><span>NOAA GOES · latest imagery</span></div>
+            <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading NOAA weather layers…</span></div>
             <div class="weather-map-error" id="weather-map-error" hidden><strong>Live map data is unavailable.</strong><span>The forecast panels above are still available.</span></div>
           </div>
-          <footer class="weather-map-footer"><span>Live forecast grid · no property clustering</span><a href="https://radar.weather.gov/" target="_blank" rel="noopener">Open official NOAA radar ↗</a></footer>
+          <footer class="weather-map-footer"><span>NOAA radar and satellite coverage · Open-Meteo forecast surfaces</span><a href="https://radar.weather.gov/" target="_blank" rel="noopener">Open official NOAA radar ↗</a></footer>
         </section>
 
         <footer class="weather-data-note">
           <span id="weather-updated">Awaiting live update</span>
-          <p>Forecast data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Official alerts by the <a href="https://www.weather.gov/" target="_blank" rel="noopener">National Weather Service</a>. Map data © OpenStreetMap contributors.</p>
+          <p>Forecast data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Radar, satellite imagery and official alerts by <a href="https://www.noaa.gov/" target="_blank" rel="noopener">NOAA / National Weather Service</a>. Map data © OpenStreetMap contributors.</p>
         </footer>
         <div class="weather-toast" id="weather-toast" role="status" aria-live="polite"></div>
       </main>
