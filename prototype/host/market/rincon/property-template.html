@@ -50,7 +50,8 @@
     const parts = location.pathname.split("/").filter(Boolean);
     const propertyId = parts[parts.length - 1] === "index.html" ? parts[parts.length - 2] : parts[parts.length - 1];
 
-    const propertyBucket = String(Number(String(propertyId).replace(/\\D/g, "").slice(-2) || 0)).padStart(2, "0");\n    fetch(`/data/public/rincon-details/${propertyBucket}.json`)
+    const propertyBucket = String(Number(String(propertyId).replace(/\D/g, "").slice(-2) || 0)).padStart(2, "0");
+    fetch(`/data/public/rincon-details/${propertyBucket}.json`)
       .then((response) => { if (!response.ok) throw new Error("Listings unavailable"); return response.json(); })
       .then((rows) => {
         const listing = rows.find((row) => String(row.id) === decodeURIComponent(propertyId));
