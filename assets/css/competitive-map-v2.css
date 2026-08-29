@@ -254,7 +254,8 @@
   backdrop-filter: blur(10px);
 }
 
-#terrain-toggle {
+#terrain-toggle,
+#boundaries-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -263,7 +264,8 @@
   text-align: left;
 }
 
-#terrain-toggle > i {
+#terrain-toggle > i,
+#boundaries-toggle > i {
   display: grid;
   place-items: center;
   width: 25px;
@@ -276,11 +278,13 @@
   transition: transform .3s;
 }
 
-#terrain-toggle > span {
+#terrain-toggle > span,
+#boundaries-toggle > span {
   display: grid;
 }
 
-#terrain-toggle small {
+#terrain-toggle small,
+#boundaries-toggle small {
   color: #8390a2;
   font-size: 6px;
   font-weight: 850;
@@ -288,7 +292,8 @@
   text-transform: uppercase;
 }
 
-#terrain-toggle b {
+#terrain-toggle b,
+#boundaries-toggle b {
   margin-top: 2px;
   font-size: 8px;
   font-weight: 900;
@@ -309,6 +314,29 @@
 
 #terrain-toggle[aria-pressed="true"] small {
   color: #8fa6c0;
+}
+
+#boundaries-toggle {
+  min-width: 112px;
+}
+
+#boundaries-toggle > i {
+  color: var(--map-blue);
+  background: #edf1ff;
+}
+
+#boundaries-toggle[aria-pressed="true"] {
+  border-color: #9aafff;
+}
+
+#boundaries-toggle[aria-pressed="true"] > i {
+  color: #fff;
+  background: var(--map-blue);
+}
+
+#boundaries-toggle[aria-pressed="false"] {
+  color: #758196;
+  opacity: .88;
 }
 
 #reset-map-view {
@@ -425,12 +453,17 @@
   background: #fff;
   border: 2px solid var(--map-green);
 }
-.map-legend .legend-boundary {
+.map-legend .legend-boundary-rincon,
+.map-legend .legend-boundary-aguada,
+.map-legend .legend-boundary-anasco {
   width: 13px;
   height: 0;
-  border-top: 2px dashed var(--map-ink);
   border-radius: 0;
 }
+.map-legend .legend-boundary-rincon { border-top: 2px dashed var(--map-ink); }
+.map-legend .legend-boundary-aguada { border-top: 2px dashed #d84c4a; }
+.map-legend .legend-boundary-anasco { border-top: 2px dashed #6752b7; }
+.competitive-map-stage.boundaries-hidden .map-legend .boundary-only { display: none; }
 .map-legend .legend-contour { width: 12px; height: 2px; background: #8d6f52; border-radius: 0; box-shadow: 0 3px 0 #b79c7d; }
 
 .municipio-boundary-label {
@@ -448,6 +481,10 @@
   white-space: nowrap;
   pointer-events: none;
 }
+
+.municipio-label-rincon { border-color: rgba(7, 28, 56, .28); }
+.municipio-label-aguada { border-color: rgba(216, 76, 74, .58); }
+.municipio-label-anasco { border-color: rgba(103, 82, 183, .58); }
 
 .host-map-marker {
   display: flex;
@@ -827,8 +864,9 @@
     gap: 8px 14px;
   }
 
-  .terrain-map-controls { right: 51px; }
-  #terrain-toggle { flex: 1; }
+  .terrain-map-controls { right: 51px; flex-wrap: wrap; }
+  #terrain-toggle,
+  #boundaries-toggle { flex: 1; }
 
   .competitive-property-list {
     grid-template-columns: 1fr;

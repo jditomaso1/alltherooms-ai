@@ -2,8 +2,12 @@
   "use strict";
 
   var DATA_URL = "/data/public/rincon-map-listings.json";
-  var BOUNDARY_URL = "/data/public/rincon-municipio-boundary.geojson";
-  var BOUNDARY_LABEL_CENTER = [-67.2507864, 18.3390275];
+  var BOUNDARY_URL = "/data/public/rincon-municipio-boundary.geojson?v=2";
+  var BOUNDARY_LABELS = [
+    { name: "Rincón Municipio", center: [-67.2507864, 18.3390275], className: "rincon" },
+    { name: "Aguada Municipio", center: [-67.1857273, 18.3756409], className: "aguada" },
+    { name: "Añasco Municipio", center: [-67.1311566, 18.2844444], className: "anasco" }
+  ];
   var HOST_PROPERTY_ID = "1731305794703529900";
   var HOST_CENTER = [-67.2455, 18.3185];
   var DEFAULT_CENTER = [HOST_CENTER[0], HOST_CENTER[1]];
@@ -22,10 +26,11 @@
   var selectedRecord = null;
   var map = null;
   var hostMarker = null;
-  var boundaryLabel = null;
+  var boundaryLabels = [];
   var hoverPopup = null;
   var toastTimer = null;
   var terrainEnabled = false;
+  var boundariesVisible = true;
 
   var elements = {
     loading: document.getElementById("map-loading"),
@@ -46,6 +51,7 @@
     selected: document.getElementById("selected-map-property"),
     save: document.getElementById("save-map-view"),
     terrain: document.getElementById("terrain-toggle"),
+    boundaries: document.getElementById("boundaries-toggle"),
     resetView: document.getElementById("reset-map-view"),
     toast: document.getElementById("map-toast")
   };
@@ -326,9 +332,24 @@
     }
   }
 
+  function setBoundaryVisibility(visible) {
+    if (!map || !map.getLayer("municipio-boundaries-fill")) return;
+    boundariesVisible = Boolean(visible);
+    var visibility = boundariesVisible ? "visible" : "none";
+    map.setLayoutProperty("municipio-boundaries-fill", "visibility", visibility);
+    map.setLayoutProperty("municipio-boundaries-line", "visibility", visibility);
+    boundaryLabels.forEach(function (marker) {
+      marker.getElement().hidden = !boundariesVisible;
+    });
+    elements.boundaries.setAttribute("aria-pressed", boundariesVisible ? "true" : "false");
+    elements.boundaries.querySelector("b").textContent = boundariesVisible ? "Boundaries on" : "Boundaries off";
+    elements.boundaries.closest(".competitive-map-stage").classList.toggle("boundaries-hidden", !boundariesVisible);
+  }
+
   function resetMapView() {
     if (!map) return;
     setTerrainMode(false, { move: false });
+    setBoundaryVisibility(true);
     map.easeTo({
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
@@ -337,7 +358,7 @@
       duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650
     });
     var url = new URL(window.location.href);
-    ["lng", "lat", "z", "terrain"].forEach(function (key) { url.searchParams.delete(key); });
+    ["lng", "lat", "z", "terrain", "boundaries"].forEach(function (key) { url.searchParams.delete(key); });
     window.history.replaceState({}, "", url);
     showToast("Map returned to Market view.");
   }
@@ -357,39 +378,55 @@
       .addTo(map);
   }
 
-  function createBoundaryLabel() {
-    if (boundaryLabel) return;
-    var labelElement = document.createElement("div");
-    labelElement.className = "municipio-boundary-label";
-    labelElement.textContent = "Rincón Municipio";
-    boundaryLabel = new window.maplibregl.Marker({ element: labelElement, anchor: "center" })
-      .setLngLat(BOUNDARY_LABEL_CENTER)
-      .addTo(map);
+  function createBoundaryLabels() {
+    if (boundaryLabels.length) return;
+    BOUNDARY_LABELS.forEach(function (label) {
+      var labelElement = document.createElement("div");
+      labelElement.className = "municipio-boundary-label municipio-label-" + label.className;
+      labelElement.textContent = label.name;
+      boundaryLabels.push(
+        new window.maplibregl.Marker({ element: labelElement, anchor: "center" })
+          .setLngLat(label.center)
+          .addTo(map)
+      );
+    });
   }
 
   function addMapData() {
-    map.addSource("rincon-boundary", {
+    map.addSource("market-municipio-boundaries", {
       type: "geojson",
       data: BOUNDARY_URL,
-      attribution: "Boundary: U.S. Census Bureau"
+      attribution: "Municipal boundaries: U.S. Census Bureau"
     });
 
     map.addLayer({
-      id: "rincon-boundary-fill",
+      id: "municipio-boundaries-fill",
       type: "fill",
-      source: "rincon-boundary",
+      source: "market-municipio-boundaries",
       paint: {
-        "fill-color": "#3f6fff",
-        "fill-opacity": .055
+        "fill-color": [
+          "match", ["get", "BASENAME"],
+          "Rincón", "#3f6fff",
+          "Aguada", "#ff5c59",
+          "Añasco", "#8a6de9",
+          "#3f6fff"
+        ],
+        "fill-opacity": .045
       }
     });
 
     map.addLayer({
-      id: "rincon-boundary-line",
+      id: "municipio-boundaries-line",
       type: "line",
-      source: "rincon-boundary",
+      source: "market-municipio-boundaries",
       paint: {
-        "line-color": "#071c38",
+        "line-color": [
+          "match", ["get", "BASENAME"],
+          "Rincón", "#071c38",
+          "Aguada", "#d84c4a",
+          "Añasco", "#6752b7",
+          "#071c38"
+        ],
         "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1.2, 12, 2, 16, 3],
         "line-opacity": .82,
         "line-dasharray": [4, 2]
@@ -470,7 +507,8 @@
     });
 
     var host = recordById.get(HOST_PROPERTY_ID);
-    createBoundaryLabel();
+    createBoundaryLabels();
+    setBoundaryVisibility(new URLSearchParams(window.location.search).get("boundaries") !== "0");
     createHostMarker(host);
     if (host) selectProperty(host, { move: false });
     if (new URLSearchParams(window.location.search).get("terrain") === "1") {
@@ -609,6 +647,9 @@
     elements.terrain.addEventListener("click", function () {
       setTerrainMode(!terrainEnabled);
     });
+    elements.boundaries.addEventListener("click", function () {
+      setBoundaryVisibility(!boundariesVisible);
+    });
     elements.resetView.addEventListener("click", resetMapView);
 
     document.addEventListener("click", function (event) {
@@ -630,6 +671,8 @@
         url.searchParams.set("z", map.getZoom().toFixed(2));
         if (terrainEnabled) url.searchParams.set("terrain", "1");
         else url.searchParams.delete("terrain");
+        if (boundariesVisible) url.searchParams.delete("boundaries");
+        else url.searchParams.set("boundaries", "0");
         window.history.replaceState({}, "", url);
       }
       if (navigator.clipboard && window.isSecureContext) {
