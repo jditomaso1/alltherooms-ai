@@ -5,13 +5,13 @@
   var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=18.3185&longitude=-67.2455&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wave_direction_dominant,wave_period_max,swell_wave_height_max,swell_wave_direction_dominant,swell_wave_period_max&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico&forecast_days=8";
   var ALERTS_URL = "https://api.weather.gov/alerts/active?point=18.3185,-67.2455";
   var CASA_BRISA = { latitude: 18.3185, longitude: -67.2455 };
-  var NOAA_RADAR_WMS = "https://opengeo.ncep.noaa.gov/geoserver/tjua/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=tjua_sr_bref&STYLES=radar_reflectivity&SRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}";
+  var NOAA_RADAR_WMS = "https://opengeo.ncep.noaa.gov/geoserver/carib/carib_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=carib_bref_qcd&STYLES=radar_reflectivity&SRS=EPSG:3857&WIDTH=1024&HEIGHT=1024&BBOX={bbox-epsg-3857}";
   var NOAA_SATELLITE_IMAGE = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/pr/GEOCOLOR/2400x2400.jpg";
   var NOAA_SATELLITE_COORDINATES = [[-73.2, 25.2], [-58.5, 25.2], [-58.5, 10.5], [-73.2, 10.5]];
   var NOAA_PRODUCTS = {
     radar: {
-      source: "NOAA / NWS · San Juan super-resolution radar",
-      caption: "Official NOAA/NWS super-resolution radar · interactive Rincón view",
+      source: "NOAA / NWS · quality-controlled Caribbean radar",
+      caption: "Official NOAA/NWS quality-controlled radar · interactive Rincón view",
       link: "https://radar.weather.gov/",
       linkLabel: "Open full NOAA radar ↗"
     },
@@ -283,6 +283,7 @@
     elements.mapCaption.textContent = product.caption;
     elements.mapLink.href = product.link;
     elements.mapLink.textContent = product.linkLabel;
+    elements.radarLegend.hidden = !isRadar;
     elements.mapError.hidden = true;
     elements.mapLoading.querySelector("span").textContent = isRadar ? "Loading interactive NOAA radar…" : "Loading interactive NOAA satellite imagery…";
     elements.mapLoading.classList.toggle("is-ready", state.mapReady);
@@ -347,7 +348,7 @@
             id: "weather-radar",
             type: "raster",
             source: "noaa-radar",
-            paint: { "raster-opacity": .86, "raster-fade-duration": 180, "raster-resampling": "linear" }
+            paint: { "raster-opacity": .64, "raster-fade-duration": 180, "raster-resampling": "linear" }
           },
           {
             id: "weather-satellite",
@@ -359,7 +360,7 @@
         ]
       },
       center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
-      zoom: 9.75,
+      zoom: 9.25,
       minZoom: 6,
       maxZoom: 16,
       maxBounds: [[-74.5, 9.5], [-57.5, 26]],
@@ -400,7 +401,7 @@
     if (state.mapReady && state.map) {
       state.map.easeTo({
         center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
-        zoom: layer === "radar" ? 9.75 : 7.15,
+        zoom: layer === "radar" ? 9.25 : 7.15,
         duration: 650
       });
     }
@@ -501,6 +502,7 @@
     elements.mapFrame = byId("noaa-weather-frame");
     elements.mapContainer = byId("local-weather-map");
     elements.mapSource = byId("weather-map-source");
+    elements.radarLegend = byId("weather-radar-legend");
     elements.mapCaption = byId("weather-map-caption");
     elements.mapLink = byId("weather-map-link");
     elements.mapLoading = byId("weather-map-loading");

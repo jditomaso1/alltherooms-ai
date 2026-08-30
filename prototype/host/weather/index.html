@@ -11,9 +11,9 @@
   <link rel="shortcut icon" href="/favicon.svg?v=8">
   <link rel="stylesheet" href="/_next/static/css/index.jyET6qeL.css">
   <link rel="stylesheet" href="/assets/vendor/maplibre/maplibre-gl.css?v=5.12.0">
-  <link rel="stylesheet" href="/assets/css/local-weather-v2.css?v=10">
+  <link rel="stylesheet" href="/assets/css/local-weather-v2.css?v=12">
   <script defer src="/assets/vendor/maplibre/maplibre-gl.js?v=5.12.0"></script>
-  <script defer src="/assets/js/local-weather.js?v=10"></script>
+  <script defer src="/assets/js/local-weather.js?v=12"></script>
 </head>
 <body>
   <div class="host-app-shell host-control-shell">
@@ -109,8 +109,9 @@
           </header>
           <div class="weather-official-frame" id="noaa-weather-frame" data-layer="radar">
             <div id="local-weather-map" aria-label="Interactive NOAA radar map centered on Casa Brisa in Rincón"></div>
-            <div class="weather-map-source" id="weather-map-source"><i></i><span>NOAA / NWS · San Juan super-resolution radar</span></div>
+            <div class="weather-map-source" id="weather-map-source"><i></i><span>NOAA / NWS · quality-controlled Caribbean radar</span></div>
             <div class="weather-frame-location"><i></i><span><small>Region</small><strong>Rincón · western Puerto Rico</strong></span></div>
+            <div class="weather-radar-legend" id="weather-radar-legend" aria-label="Radar intensity legend"><span>Light</span><i></i><span>Heavy</span></div>
             <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading interactive NOAA radar…</span></div>
             <div class="weather-map-error" id="weather-map-error" hidden><strong>NOAA imagery is temporarily unavailable.</strong><span>The live forecast panels above are still available.</span></div>
           </div>
