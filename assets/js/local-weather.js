@@ -5,39 +5,20 @@
   var FORECAST_URL = "https://api.open-meteo.com/v1/forecast?latitude=18.3185&longitude=-67.2455&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,uv_index,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,rain_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FPuerto_Rico&forecast_days=8";
   var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=18.3185&longitude=-67.2455&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wave_direction_dominant,wave_period_max,swell_wave_height_max,swell_wave_direction_dominant,swell_wave_period_max&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico&forecast_days=8";
   var ALERTS_URL = "https://api.weather.gov/alerts/active?point=18.3185,-67.2455";
-  var NOAA_RADAR_WMS = "https://opengeo.ncep.noaa.gov/geoserver/carib/carib_bref_qcd/ows?service=WMS&request=GetMap&version=1.1.1&layers=carib_bref_qcd&styles=radar_reflectivity&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_SATELLITE_IR_WMS = "https://nowcoast.noaa.gov/geoserver/observations/satellite/ows?service=WMS&request=GetMap&version=1.1.1&layers=goes_longwave_imagery&styles=goes-lir&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_SATELLITE_VISIBLE_WMS = "https://nowcoast.noaa.gov/geoserver/observations/satellite/ows?service=WMS&request=GetMap&version=1.1.1&layers=goes_visible_imagery&styles=goes-vis&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_WARNINGS_WMS = "https://opengeo.ncep.noaa.gov/geoserver/wwa/warnings/ows?service=WMS&request=GetMap&version=1.1.1&layers=warnings&styles=wwa_warnings&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var WEATHER_GRID = (function () {
-    var points = [];
-    for (var latitude = 18.20; latitude <= 18.401; latitude += .04) {
-      for (var longitude = -67.34; longitude <= -67.059; longitude += .04) {
-        points.push([Number(longitude.toFixed(3)), Number(latitude.toFixed(3)), "Local forecast grid"]);
-      }
-    }
-    return points;
-  }());
-  var MARINE_GRID = (function () {
-    var points = [];
-    for (var latitude = 18.22; latitude <= 18.401; latitude += .045) {
-      points.push([-67.36, Number(latitude.toFixed(3)), "Rincón coastal waters"]);
-      points.push([-67.32, Number(latitude.toFixed(3)), "Nearshore waters"]);
-    }
-    return points;
-  }());
-  var WEATHER_SURFACE_COORDINATES = [[-67.37, 18.43], [-67.02, 18.43], [-67.02, 18.17], [-67.37, 18.17]];
-  var MARINE_SURFACE_COORDINATES = [[-67.43, 18.43], [-67.235, 18.43], [-67.235, 18.17], [-67.43, 18.17]];
+  var NOAA_SATELLITE_WMS = "https://nowcoast.noaa.gov/geoserver/satellite/wms?service=WMS&request=GetMap&version=1.1.1&layers=goes_longwave_imagery&styles=goes-lir&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_RADAR_WMS = "https://nowcoast.noaa.gov/geoserver/weather_radar/wms?service=WMS&request=GetMap&version=1.1.1&layers=caribbean_base_reflectivity_mosaic&styles=weather_radar_base_reflectivity&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_WIND_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_wind/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_wind_speed&styles=wind_speed&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_CLOUDS_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_sky/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_total_sky_cover&styles=total_sky_cover&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_TEMPERATURE_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_temperature/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_air_temperature&styles=air_temperature&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_SEA_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_wave/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_significant_wave_height&styles=significant_wave_height&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_ALERTS_WMS = "https://nowcoast.noaa.gov/geoserver/alerts/wms?service=WMS&request=GetMap&version=1.1.1&layers=watches_warnings_advisories&styles=watches_warnings_advisories&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
 
   var state = {
     forecast: null,
     marine: null,
     alerts: [],
     alertsAvailable: false,
-    weatherGrid: [],
-    marineGrid: [],
     activeLayer: "satellite",
-    surfaceImages: {},
     map: null,
     mapReady: false,
     loading: false
@@ -56,7 +37,6 @@
   function byId(id) { return document.getElementById(id); }
   function round(value) { return value !== null && value !== "" && Number.isFinite(Number(value)) ? Math.round(Number(value)) : 0; }
   function fixed(value, digits) { return value !== null && value !== "" && Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : "--"; }
-  function clamp(value, min, max) { return Math.max(min, Math.min(max, Number(value) || 0)); }
   function description(code) { return weatherDescriptions[Number(code)] || "Mixed conditions"; }
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (character) {
@@ -149,15 +129,6 @@
       if (!response.ok) throw new Error("Weather service returned " + response.status);
       return response.json();
     });
-  }
-
-  function buildGridUrl(points, marine) {
-    var latitudes = points.map(function (point) { return point[1]; }).join(",");
-    var longitudes = points.map(function (point) { return point[0]; }).join(",");
-    if (marine) {
-      return "https://marine-api.open-meteo.com/v1/marine?latitude=" + latitudes + "&longitude=" + longitudes + "&current=wave_height,wave_direction,wave_period,sea_surface_temperature&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico";
-    }
-    return "https://api.open-meteo.com/v1/forecast?latitude=" + latitudes + "&longitude=" + longitudes + "&current=temperature_2m,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability&forecast_hours=1&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FPuerto_Rico";
   }
 
   function currentHourlyIndex(forecast) {
@@ -294,40 +265,6 @@
     }
   }
 
-  function normalizeGridResponse(response, points) {
-    var items = Array.isArray(response) ? response : [response];
-    return items.map(function (item, index) {
-      return { longitude: points[index][0], latitude: points[index][1], label: points[index][2], data: item };
-    });
-  }
-
-  function colorFor(layer, value) {
-    value = Number(value) || 0;
-    if (layer === "wind") return value >= 28 ? "#ff625f" : value >= 18 ? "#ffbd35" : value >= 10 ? "#4f72ff" : "#39bed2";
-    if (layer === "cloud") return value >= 80 ? "#627086" : value >= 50 ? "#8799b5" : value >= 25 ? "#7aa6df" : "#54c7d8";
-    if (layer === "temperature") return value >= 88 ? "#ff625f" : value >= 82 ? "#ffbd35" : value >= 76 ? "#55c5d5" : "#4f72ff";
-    if (layer === "marine") return value >= 6 ? "#ff625f" : value >= 4 ? "#765ad1" : value >= 2 ? "#3f6fff" : "#29bdd6";
-    return "#ff625f";
-  }
-
-  function layerValue(record, layer) {
-    var data = record.data || {};
-    var current = data.current || {};
-    if (layer === "wind") return current.wind_speed_10m;
-    if (layer === "cloud") return current.cloud_cover;
-    if (layer === "temperature") return current.temperature_2m;
-    if (layer === "marine") return current.wave_height;
-    return 0;
-  }
-
-  function layerValueLabel(layer, value) {
-    if (layer === "cloud") return round(value) + "%";
-    if (layer === "wind") return round(value) + " mph";
-    if (layer === "temperature") return round(value) + "°F";
-    if (layer === "marine") return fixed(value, 1) + " ft";
-    return "Official alert";
-  }
-
   function updateMapKey(layer) {
     var labels = {
       satellite: ["Colder cloud tops", "Warmer / clearer"], radar: ["No echo / light rain", "Heavier cells"], wind: ["Lighter wind", "Stronger wind"],
@@ -338,129 +275,34 @@
     elements.mapKey.dataset.layer = layer;
   }
 
-  function mapFeaturesForLayer(layer) {
-    if (layer === "satellite" || layer === "radar" || layer === "alerts") return [];
-    var records = layer === "marine" ? state.marineGrid : state.weatherGrid;
-    return records.map(function (record) {
-      var value = layerValue(record, layer);
-      var intensity = layer === "wind" ? clamp(value / 30, 0, 1) : layer === "cloud" ? clamp(value / 100, 0, 1) : layer === "temperature" ? clamp((value - 72) / 20, 0, 1) : clamp(value / 6, 0, 1);
-      return { type: "Feature", geometry: { type: "Point", coordinates: [record.longitude, record.latitude] }, properties: { label: record.label, value: layerValueLabel(layer, value), color: colorFor(layer, value), intensity: intensity } };
-    });
-  }
-
-  function surfaceSettings(layer) {
-    return {
-      wind: { min: 0, max: 30, colors: [[72, 195, 210], [71, 112, 238], [255, 189, 53], [255, 98, 95]], opacity: .34, coordinates: WEATHER_SURFACE_COORDINATES },
-      cloud: { min: 0, max: 100, colors: [[170, 218, 225], [132, 174, 207], [103, 119, 147], [48, 62, 83]], opacity: .29, coordinates: WEATHER_SURFACE_COORDINATES },
-      temperature: { min: 72, max: 94, colors: [[80, 119, 242], [81, 190, 205], [255, 195, 70], [245, 98, 91]], opacity: .34, coordinates: WEATHER_SURFACE_COORDINATES },
-      marine: { min: 0, max: 7, colors: [[63, 192, 210], [63, 111, 255], [112, 89, 203], [246, 98, 95]], opacity: .32, coordinates: MARINE_SURFACE_COORDINATES }
-    }[layer];
-  }
-
-  function colorFromRamp(colors, amount) {
-    var position = clamp(amount, 0, 1) * (colors.length - 1);
-    var start = Math.floor(position);
-    var end = Math.min(colors.length - 1, start + 1);
-    var mix = position - start;
-    return colors[start].map(function (channel, index) { return Math.round(channel + (colors[end][index] - channel) * mix); });
-  }
-
-  function surfaceImageForLayer(layer) {
-    if (state.surfaceImages[layer]) return state.surfaceImages[layer];
-    var settings = surfaceSettings(layer);
-    var records = (layer === "marine" ? state.marineGrid : state.weatherGrid).map(function (record) {
-      return { longitude: record.longitude, latitude: record.latitude, value: Number(layerValue(record, layer)) };
-    }).filter(function (record) { return Number.isFinite(record.value); });
-    if (!settings || !records.length) return null;
-    var canvas = document.createElement("canvas");
-    canvas.width = 420;
-    canvas.height = 312;
-    var context = canvas.getContext("2d");
-    var image = context.createImageData(canvas.width, canvas.height);
-    var north = settings.coordinates[0][1];
-    var south = settings.coordinates[2][1];
-    var west = settings.coordinates[0][0];
-    var east = settings.coordinates[1][0];
-    var cosine = Math.cos(((north + south) / 2) * Math.PI / 180);
-    for (var y = 0; y < canvas.height; y += 1) {
-      var latitude = north - (north - south) * y / (canvas.height - 1);
-      for (var x = 0; x < canvas.width; x += 1) {
-        var longitude = west + (east - west) * x / (canvas.width - 1);
-        var weightedValue = 0;
-        var totalWeight = 0;
-        for (var index = 0; index < records.length; index += 1) {
-          var deltaX = (longitude - records[index].longitude) * cosine;
-          var deltaY = latitude - records[index].latitude;
-          var distanceSquared = deltaX * deltaX + deltaY * deltaY;
-          var weight = 1 / Math.pow(distanceSquared + .000018, 1.2);
-          weightedValue += records[index].value * weight;
-          totalWeight += weight;
-        }
-        var value = weightedValue / totalWeight;
-        var color = colorFromRamp(settings.colors, (value - settings.min) / (settings.max - settings.min));
-        var horizontalFade = Math.min(1, x / 50, (canvas.width - 1 - x) / 50);
-        var verticalFade = Math.min(1, y / 40, (canvas.height - 1 - y) / 40);
-        var edgeFade = clamp(Math.min(horizontalFade, verticalFade), 0, 1);
-        edgeFade = edgeFade * edgeFade * (3 - 2 * edgeFade);
-        var offset = (y * canvas.width + x) * 4;
-        image.data[offset] = color[0];
-        image.data[offset + 1] = color[1];
-        image.data[offset + 2] = color[2];
-        image.data[offset + 3] = Math.round(255 * edgeFade);
-      }
-    }
-    context.putImageData(image, 0, 0);
-    state.surfaceImages[layer] = { url: canvas.toDataURL("image/png"), coordinates: settings.coordinates, opacity: settings.opacity };
-    return state.surfaceImages[layer];
-  }
-
-  function alertGeoJson() {
-    return { type: "FeatureCollection", features: state.alerts.filter(function (alert) { return alert.geometry; }).map(function (alert) { return { type: "Feature", geometry: alert.geometry, properties: { event: alert.properties.event || "Weather alert" } }; }) };
-  }
-
   function renderMapLayer() {
-    if (!state.mapReady || !state.map.getSource("weather-points")) return;
-    var features = mapFeaturesForLayer(state.activeLayer);
-    state.map.getSource("weather-points").setData({ type: "FeatureCollection", features: features });
-    state.map.getSource("official-alert-areas").setData(alertGeoJson());
-    var currentIsDay = state.forecast && state.forecast.current && Number(state.forecast.current.is_day) === 1;
-    var isSatellite = state.activeLayer === "satellite";
-    var isRadar = state.activeLayer === "radar";
-    var alertVisibility = state.activeLayer === "alerts" ? "visible" : "none";
-    var surfaceVisibility = ["wind", "cloud", "temperature", "marine"].indexOf(state.activeLayer) >= 0 ? "visible" : "none";
-    state.map.setLayoutProperty("noaa-satellite-visible", "visibility", isSatellite && currentIsDay ? "visible" : "none");
-    state.map.setLayoutProperty("noaa-satellite-ir", "visibility", isSatellite && !currentIsDay ? "visible" : "none");
-    state.map.setLayoutProperty("noaa-radar", "visibility", isRadar ? "visible" : "none");
-    state.map.setLayoutProperty("noaa-warning-raster", "visibility", alertVisibility);
-    state.map.setLayoutProperty("official-alert-fill", "visibility", alertVisibility);
-    state.map.setLayoutProperty("official-alert-line", "visibility", alertVisibility);
-    state.map.setLayoutProperty("weather-surface-image", "visibility", surfaceVisibility);
-    state.map.setLayoutProperty("weather-points", "visibility", surfaceVisibility);
-    if (surfaceVisibility === "visible") {
-      var surface = surfaceImageForLayer(state.activeLayer);
-      if (surface) {
-        state.map.getSource("weather-surface-image-source").updateImage({ url: surface.url, coordinates: surface.coordinates });
-        state.map.setPaintProperty("weather-surface-image", "raster-opacity", surface.opacity);
-      } else state.map.setLayoutProperty("weather-surface-image", "visibility", "none");
-    }
-    state.map.setPaintProperty("weather-base", "raster-opacity", isSatellite ? .72 : .84);
+    if (!state.mapReady) return;
+    var layerIds = {
+      satellite: "noaa-satellite",
+      radar: "noaa-radar",
+      wind: "noaa-wind",
+      cloud: "noaa-clouds",
+      temperature: "noaa-temperature",
+      marine: "noaa-sea",
+      alerts: "noaa-alerts"
+    };
+    Object.keys(layerIds).forEach(function (layer) {
+      state.map.setLayoutProperty(layerIds[layer], "visibility", layer === state.activeLayer ? "visible" : "none");
+    });
+    state.map.setPaintProperty("weather-base", "raster-opacity", state.activeLayer === "satellite" ? .58 : .72);
     updateMapKey(state.activeLayer);
     var sourceLabels = {
-      satellite: "NOAA GOES · " + (currentIsDay ? "visible imagery" : "infrared imagery"),
-      radar: "NOAA / NWS · live radar · clear areas appear empty",
-      wind: "Open-Meteo · continuous wind surface",
-      cloud: "Open-Meteo · continuous cloud surface",
-      temperature: "Open-Meteo · continuous temperature surface",
-      marine: "Open-Meteo · continuous wave surface",
-      alerts: "National Weather Service · official alerts"
+      satellite: "NOAA GOES · infrared satellite",
+      radar: "NOAA / NWS · Caribbean radar · clear areas appear empty",
+      wind: "NOAA NDFD · wind speed forecast",
+      cloud: "NOAA NDFD · total sky cover",
+      temperature: "NOAA NDFD · air temperature forecast",
+      marine: "NOAA NDFD · significant wave height",
+      alerts: "NOAA / NWS · watches, warnings and advisories"
     };
     elements.mapSource.querySelector("span").textContent = sourceLabels[state.activeLayer];
-    if (state.activeLayer === "marine") state.map.easeTo({ center: [-67.295, 18.305], zoom: 10.2, duration: 450 });
-    else state.map.easeTo({ center: [CASA_BRISA.longitude, CASA_BRISA.latitude], zoom: 10.5, duration: 450 });
-    if (features.length || isSatellite || isRadar || state.activeLayer === "alerts") {
-      elements.mapLoading.classList.add("is-ready");
-      elements.mapError.hidden = true;
-    }
+    elements.mapLoading.classList.add("is-ready");
+    elements.mapError.hidden = true;
   }
 
   function initializeMap() {
@@ -475,18 +317,24 @@
         version: 8,
         sources: {
           base: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" },
-          "noaa-radar-source": { type: "raster", tiles: [NOAA_RADAR_WMS], tileSize: 256, attribution: "NOAA/NWS MRMS" },
-          "noaa-satellite-ir-source": { type: "raster", tiles: [NOAA_SATELLITE_IR_WMS], tileSize: 256, attribution: "NOAA nowCOAST/GOES" },
-          "noaa-satellite-visible-source": { type: "raster", tiles: [NOAA_SATELLITE_VISIBLE_WMS], tileSize: 256, attribution: "NOAA nowCOAST/GOES" },
-          "noaa-warning-source": { type: "raster", tiles: [NOAA_WARNINGS_WMS], tileSize: 256, attribution: "NOAA/NWS" }
+          "noaa-satellite-source": { type: "raster", tiles: [NOAA_SATELLITE_WMS], tileSize: 256, attribution: "NOAA nowCOAST/GOES" },
+          "noaa-radar-source": { type: "raster", tiles: [NOAA_RADAR_WMS], tileSize: 256, attribution: "NOAA/NWS" },
+          "noaa-wind-source": { type: "raster", tiles: [NOAA_WIND_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
+          "noaa-clouds-source": { type: "raster", tiles: [NOAA_CLOUDS_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
+          "noaa-temperature-source": { type: "raster", tiles: [NOAA_TEMPERATURE_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
+          "noaa-sea-source": { type: "raster", tiles: [NOAA_SEA_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
+          "noaa-alerts-source": { type: "raster", tiles: [NOAA_ALERTS_WMS], tileSize: 256, attribution: "NOAA/NWS" }
         },
         layers: [
           { id: "weather-background", type: "background", paint: { "background-color": "#dce8eb" } },
-          { id: "weather-base", type: "raster", source: "base", paint: { "raster-saturation": -.88, "raster-contrast": -.12, "raster-brightness-min": .28, "raster-brightness-max": .96, "raster-opacity": .54 } },
-          { id: "noaa-satellite-visible", type: "raster", source: "noaa-satellite-visible-source", layout: { visibility: "none" }, paint: { "raster-opacity": .38, "raster-contrast": .03, "raster-brightness-min": .34, "raster-brightness-max": 1, "raster-fade-duration": 180 } },
-          { id: "noaa-satellite-ir", type: "raster", source: "noaa-satellite-ir-source", layout: { visibility: "visible" }, paint: { "raster-opacity": .32, "raster-contrast": .06, "raster-brightness-min": .4, "raster-brightness-max": 1, "raster-fade-duration": 180 } },
-          { id: "noaa-radar", type: "raster", source: "noaa-radar-source", layout: { visibility: "none" }, paint: { "raster-opacity": .88, "raster-fade-duration": 120 } },
-          { id: "noaa-warning-raster", type: "raster", source: "noaa-warning-source", layout: { visibility: "none" }, paint: { "raster-opacity": .72, "raster-fade-duration": 120 } }
+          { id: "weather-base", type: "raster", source: "base", paint: { "raster-saturation": -.88, "raster-contrast": -.12, "raster-brightness-min": .28, "raster-brightness-max": .96, "raster-opacity": .58 } },
+          { id: "noaa-satellite", type: "raster", source: "noaa-satellite-source", layout: { visibility: "visible" }, paint: { "raster-opacity": .68, "raster-contrast": .08, "raster-fade-duration": 120 } },
+          { id: "noaa-radar", type: "raster", source: "noaa-radar-source", layout: { visibility: "none" }, paint: { "raster-opacity": .92, "raster-fade-duration": 120 } },
+          { id: "noaa-wind", type: "raster", source: "noaa-wind-source", layout: { visibility: "none" }, paint: { "raster-opacity": .82, "raster-fade-duration": 120 } },
+          { id: "noaa-clouds", type: "raster", source: "noaa-clouds-source", layout: { visibility: "none" }, paint: { "raster-opacity": .78, "raster-fade-duration": 120 } },
+          { id: "noaa-temperature", type: "raster", source: "noaa-temperature-source", layout: { visibility: "none" }, paint: { "raster-opacity": .80, "raster-fade-duration": 120 } },
+          { id: "noaa-sea", type: "raster", source: "noaa-sea-source", layout: { visibility: "none" }, paint: { "raster-opacity": .84, "raster-fade-duration": 120 } },
+          { id: "noaa-alerts", type: "raster", source: "noaa-alerts-source", layout: { visibility: "none" }, paint: { "raster-opacity": .86, "raster-fade-duration": 120 } }
         ]
       },
       center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
@@ -501,16 +349,6 @@
     state.map.addControl(new window.maplibregl.NavigationControl({ showCompass: false }), "top-right");
     state.map.addControl(new window.maplibregl.AttributionControl({ compact: true }), "bottom-right");
     state.map.on("load", function () {
-      state.map.addSource("official-alert-areas", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-      state.map.addLayer({ id: "official-alert-fill", type: "fill", source: "official-alert-areas", layout: { visibility: "none" }, paint: { "fill-color": "#ff625f", "fill-opacity": .22 } });
-      state.map.addLayer({ id: "official-alert-line", type: "line", source: "official-alert-areas", layout: { visibility: "none" }, paint: { "line-color": "#d44240", "line-width": 2, "line-dasharray": [2, 1] } });
-      state.map.addSource("weather-points", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-      var emptySurface = document.createElement("canvas");
-      emptySurface.width = 2;
-      emptySurface.height = 2;
-      state.map.addSource("weather-surface-image-source", { type: "image", url: emptySurface.toDataURL("image/png"), coordinates: WEATHER_SURFACE_COORDINATES });
-      state.map.addLayer({ id: "weather-surface-image", type: "raster", source: "weather-surface-image-source", layout: { visibility: "none" }, paint: { "raster-opacity": .34, "raster-fade-duration": 0 } });
-      state.map.addLayer({ id: "weather-points", type: "circle", source: "weather-points", layout: { visibility: "none" }, paint: { "circle-radius": 15, "circle-color": ["get", "color"], "circle-opacity": .01 } });
       var marker = document.createElement("div");
       marker.className = "weather-host-map-marker";
       marker.setAttribute("aria-label", "Casa Brisa");
@@ -518,13 +356,6 @@
       state.mapReady = true;
       renderMapLayer();
     });
-    state.map.on("click", "weather-points", function (event) {
-      var feature = event.features && event.features[0];
-      if (!feature) return;
-      new window.maplibregl.Popup({ offset: 10 }).setLngLat(feature.geometry.coordinates).setHTML('<strong style="display:block;color:#061a36;font-size:11px">' + escapeHtml(feature.properties.label) + '</strong><span style="display:block;margin-top:4px;color:#6f7d90;font-size:9px">' + escapeHtml(feature.properties.value) + '</span>').addTo(state.map);
-    });
-    state.map.on("mouseenter", "weather-points", function () { state.map.getCanvas().style.cursor = "pointer"; });
-    state.map.on("mouseleave", "weather-points", function () { state.map.getCanvas().style.cursor = ""; });
     state.map.on("error", function () { /* Individual tile errors should not hide the forecast. */ });
   }
 
@@ -579,9 +410,7 @@
     var requests = [
       fetchJson(FORECAST_URL),
       fetchJson(MARINE_URL),
-      fetchJson(ALERTS_URL, { headers: { Accept: "application/geo+json" } }),
-      fetchJson(buildGridUrl(WEATHER_GRID, false)),
-      fetchJson(buildGridUrl(MARINE_GRID, true))
+      fetchJson(ALERTS_URL, { headers: { Accept: "application/geo+json" } })
     ];
     Promise.allSettled(requests).then(function (results) {
       var forecastLive = results[0].status === "fulfilled";
@@ -589,9 +418,6 @@
       state.marine = results[1].status === "fulfilled" ? results[1].value : (state.marine || fallbackMarine());
       state.alertsAvailable = results[2].status === "fulfilled";
       state.alerts = state.alertsAvailable && Array.isArray(results[2].value.features) ? results[2].value.features : [];
-      if (results[3].status === "fulfilled") state.weatherGrid = normalizeGridResponse(results[3].value, WEATHER_GRID);
-      if (results[4].status === "fulfilled") state.marineGrid = normalizeGridResponse(results[4].value, MARINE_GRID);
-      state.surfaceImages = {};
       renderAll();
       updateLiveStatus(forecastLive);
       var updated = new Intl.DateTimeFormat("en-US", { timeZone: "America/Puerto_Rico", hour: "numeric", minute: "2-digit", month: "short", day: "numeric" }).format(new Date());

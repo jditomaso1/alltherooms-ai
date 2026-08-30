@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/assets/vendor/maplibre/maplibre-gl.css?v=5.12.0">
   <link rel="stylesheet" href="/assets/css/local-weather-v2.css?v=1">
   <script defer src="/assets/vendor/maplibre/maplibre-gl.js?v=5.12.0"></script>
-  <script defer src="/assets/js/local-weather.js?v=3"></script>
+  <script defer src="/assets/js/local-weather.js?v=4"></script>
 </head>
 <body>
   <div class="host-app-shell host-control-shell">
@@ -120,12 +120,12 @@
             <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading NOAA weather layers…</span></div>
             <div class="weather-map-error" id="weather-map-error" hidden><strong>Live map data is unavailable.</strong><span>The forecast panels above are still available.</span></div>
           </div>
-          <footer class="weather-map-footer"><span>NOAA radar and satellite coverage · Open-Meteo forecast surfaces</span><a href="https://radar.weather.gov/" target="_blank" rel="noopener">Open official NOAA radar ↗</a></footer>
+          <footer class="weather-map-footer"><span>Official NOAA nowCOAST layers · centered on Rincón</span><a href="https://nowcoast.noaa.gov/?BOX=-67.42%3A18.15%3A-67.04%3A18.48" target="_blank" rel="noopener">Open full NOAA map ↗</a></footer>
         </section>
 
         <footer class="weather-data-note">
           <span id="weather-updated">Awaiting live update</span>
-          <p>Forecast data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Radar, satellite imagery and official alerts by <a href="https://www.noaa.gov/" target="_blank" rel="noopener">NOAA / National Weather Service</a>. Map data © OpenStreetMap contributors.</p>
+          <p>Forecast panels by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Weather-map layers and official alerts by <a href="https://nowcoast.noaa.gov/" target="_blank" rel="noopener">NOAA nowCOAST / National Weather Service</a>. Map data © OpenStreetMap contributors.</p>
         </footer>
         <div class="weather-toast" id="weather-toast" role="status" aria-live="polite"></div>
       </main>
