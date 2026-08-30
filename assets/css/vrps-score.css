@@ -1,3 +1,12 @@
+.host-page-intro h2 {
+  font-family: inherit;
+  font-size: clamp(40px, 4vw, 62px);
+  font-weight: 400;
+  letter-spacing: -.055em;
+  line-height: .98;
+  margin: 0;
+}
+
 @media (min-width: 1121px) {
   .host-page-intro > div:first-child {
     flex: 1 1 auto;
@@ -6,5 +15,11 @@
 
   .host-page-intro h2 {
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .host-page-intro h2 {
+    font-size: 42px;
   }
 }
