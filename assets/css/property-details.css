@@ -1,0 +1,137 @@
+.property-details-page .host-primary-action { font-size: 12px; padding: 14px 17px; }
+
+.property-details-page .property-overview-card {
+  grid-template-columns: minmax(360px, .82fr) minmax(440px, 1fr) 270px;
+}
+.property-details-page .property-overview-image { min-height: 380px; }
+.property-details-page .property-overview-image span {
+  font-size: 10px;
+  padding: 8px 11px;
+  top: 18px;
+  left: 18px;
+}
+.property-details-page .property-overview-copy { padding: 40px; }
+.property-details-page .property-overview-copy > p {
+  font-size: 11px;
+  margin-bottom: 11px;
+}
+.property-details-page .property-overview-copy h3 {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+.property-details-page .property-overview-copy > span {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.property-details-page .property-fact-row {
+  margin-top: 34px;
+  padding-top: 25px;
+}
+.property-details-page .property-fact-row div + div { padding-left: 18px; }
+.property-details-page .property-fact-row small {
+  font-size: 10px;
+  letter-spacing: .03em;
+}
+.property-details-page .property-fact-row strong {
+  font-size: 16px;
+  margin-top: 7px;
+}
+
+.property-details-page .property-completeness { padding: 32px; }
+.property-details-page .property-completeness > span { font-size: 11px; }
+.property-details-page .property-completeness > strong {
+  font-size: 64px;
+  margin: 20px 0;
+}
+.property-details-page .property-completeness > div { height: 7px; }
+.property-details-page .property-completeness > small {
+  font-size: 11px;
+  line-height: 1.55;
+  margin-top: 16px;
+}
+
+.property-details-page .host-two-column {
+  grid-template-columns: minmax(0, 1.4fr) minmax(340px, .6fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+.property-details-page .host-detail-card,
+.property-details-page .channel-card { padding: 28px; }
+.property-details-page .host-section-heading { margin-bottom: 22px; }
+.property-details-page .host-section-heading p {
+  font-size: 11px;
+  margin-bottom: 9px;
+}
+.property-details-page .host-section-heading h3 { font-size: 28px; }
+.property-details-page .host-section-heading > span { font-size: 11px; }
+
+.property-details-page .amenity-chip-grid { gap: 10px; }
+.property-details-page .amenity-chip-grid span {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  min-height: 48px;
+  padding: 14px;
+}
+.property-details-page .property-description {
+  margin-top: 27px;
+  padding-top: 24px;
+}
+.property-details-page .property-description strong { font-size: 16px; }
+.property-details-page .property-description p {
+  font-size: 14px;
+  line-height: 1.65;
+  margin-top: 10px;
+  max-width: 820px;
+}
+
+.property-details-page .channel-row {
+  gap: 13px;
+  grid-template-columns: 44px 1fr auto;
+  padding: 16px 0;
+}
+.property-details-page .channel-row > i {
+  font-size: 11px;
+  height: 42px;
+  width: 42px;
+}
+.property-details-page .channel-row > span strong { font-size: 14px; }
+.property-details-page .channel-row > span small {
+  font-size: 11px;
+  margin-top: 4px;
+}
+.property-details-page .channel-row > b { font-size: 10px; }
+.property-details-page .channel-card > button {
+  font-size: 12px;
+  margin-top: 13px;
+  padding: 13px;
+}
+
+@media (max-width: 1360px) {
+  .property-details-page .property-overview-card {
+    grid-template-columns: minmax(300px, .8fr) minmax(0, 1.2fr);
+  }
+  .property-details-page .property-completeness { display: none; }
+}
+
+@media (max-width: 1240px) {
+  .property-details-page .host-two-column {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+  }
+  .property-details-page .amenity-chip-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 760px) {
+  .property-details-page .property-overview-card,
+  .property-details-page .host-two-column { grid-template-columns: 1fr; }
+  .property-details-page .property-overview-image { min-height: 280px; }
+  .property-details-page .property-overview-copy { padding: 27px; }
+  .property-details-page .property-overview-copy h3 { font-size: 34px; }
+  .property-details-page .property-fact-row { grid-template-columns: 1fr 1fr; }
+  .property-details-page .host-detail-card,
+  .property-details-page .channel-card { padding: 22px; }
+}
+
+@media (max-width: 480px) {
+  .property-details-page .amenity-chip-grid { grid-template-columns: 1fr; }
+}
