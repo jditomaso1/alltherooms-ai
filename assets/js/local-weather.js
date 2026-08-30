@@ -4,12 +4,12 @@
   var FORECAST_URL = "https://api.open-meteo.com/v1/forecast?latitude=18.3185&longitude=-67.2455&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,uv_index,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,rain_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FPuerto_Rico&forecast_days=8";
   var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=18.3185&longitude=-67.2455&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wave_direction_dominant,wave_period_max,swell_wave_height_max,swell_wave_direction_dominant,swell_wave_period_max&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico&forecast_days=8";
   var ALERTS_URL = "https://api.weather.gov/alerts/active?point=18.3185,-67.2455";
+  var CASA_BRISA = { latitude: 18.3185, longitude: -67.2455 };
+  var NOAA_RADAR_WMS = "https://nowcoast.noaa.gov/geoserver/weather_radar/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=caribbean_base_reflectivity_mosaic&STYLES=weather_radar_base_reflectivity&SRS=EPSG:3857&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}";
   var NOAA_PRODUCTS = {
     radar: {
-      src: "https://radar.weather.gov/ridge/standard/TJUA_loop.gif",
-      alt: "Animated National Weather Service radar loop for Puerto Rico and the U.S. Virgin Islands",
-      source: "NWS San Juan · animated Puerto Rico radar",
-      caption: "Official NWS radar loop for Puerto Rico · updates automatically",
+      source: "NOAA / NWS · live Caribbean radar",
+      caption: "Official NOAA/NWS radar layer · interactive map centered on Rincón",
       link: "https://radar.weather.gov/",
       linkLabel: "Open full NOAA radar ↗"
     },
@@ -30,7 +30,9 @@
     alertsAvailable: false,
     activeLayer: "radar",
     zoomedOut: false,
-    loading: false
+    loading: false,
+    map: null,
+    mapReady: false
   };
 
   var elements = {};
@@ -276,19 +278,112 @@
 
   function renderMapLayer(forceRefresh) {
     var product = NOAA_PRODUCTS[state.activeLayer] || NOAA_PRODUCTS.radar;
-    var imageSource = product.src;
-    if (forceRefresh) imageSource += (imageSource.indexOf("?") === -1 ? "?" : "&") + "refresh=" + Date.now();
+    var isRadar = state.activeLayer === "radar";
     elements.mapFrame.dataset.layer = state.activeLayer;
-    elements.mapFrame.style.setProperty("--weather-frame-image", 'url("' + imageSource + '")');
     elements.mapSource.querySelector("span").textContent = product.source;
     elements.mapCaption.textContent = product.caption;
     elements.mapLink.href = product.link;
     elements.mapLink.textContent = product.linkLabel;
-    elements.mapImage.alt = product.alt;
     elements.mapError.hidden = true;
+    elements.mapContainer.hidden = !isRadar;
+    elements.mapImage.hidden = isRadar;
+    elements.imageZoom.hidden = isRadar;
+    elements.mapFrame.classList.toggle("is-zoomed-out", !isRadar && state.zoomedOut);
+
+    if (isRadar) {
+      elements.mapLoading.querySelector("span").textContent = "Loading interactive NOAA radar…";
+      elements.mapLoading.classList.toggle("is-ready", state.mapReady);
+      if (state.mapReady && state.map) window.requestAnimationFrame(function () { state.map.resize(); });
+      if (forceRefresh && state.map && state.map.getSource("noaa-radar")) {
+        var refreshed = NOAA_RADAR_WMS + "&refresh=" + Date.now();
+        state.map.getSource("noaa-radar").setTiles([refreshed]);
+      }
+      return;
+    }
+
+    var imageSource = product.src;
+    if (forceRefresh) imageSource += (imageSource.indexOf("?") === -1 ? "?" : "&") + "refresh=" + Date.now();
+    elements.mapFrame.style.setProperty("--weather-frame-image", 'url("' + imageSource + '")');
+    elements.mapImage.alt = product.alt;
+    elements.mapLoading.querySelector("span").textContent = "Loading official NOAA satellite imagery…";
     elements.mapLoading.classList.remove("is-ready");
     if (elements.mapImage.getAttribute("src") !== imageSource) elements.mapImage.src = imageSource;
     if (elements.mapImage.complete && elements.mapImage.naturalWidth > 0) elements.mapLoading.classList.add("is-ready");
+  }
+
+  function initializeRadarMap() {
+    if (!window.maplibregl || typeof window.maplibregl.Map !== "function") {
+      elements.mapLoading.classList.add("is-ready");
+      elements.mapError.hidden = false;
+      return;
+    }
+
+    state.map = new window.maplibregl.Map({
+      container: "local-weather-map",
+      style: {
+        version: 8,
+        sources: {
+          base: {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            maxzoom: 19,
+            attribution: "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>"
+          },
+          "noaa-radar": {
+            type: "raster",
+            tiles: [NOAA_RADAR_WMS],
+            tileSize: 256,
+            attribution: "NOAA / National Weather Service"
+          }
+        },
+        layers: [
+          { id: "weather-background", type: "background", paint: { "background-color": "#dce8ec" } },
+          {
+            id: "weather-base",
+            type: "raster",
+            source: "base",
+            paint: {
+              "raster-saturation": -.72,
+              "raster-contrast": -.08,
+              "raster-brightness-min": .22,
+              "raster-brightness-max": .97,
+              "raster-opacity": .86
+            }
+          },
+          {
+            id: "weather-radar",
+            type: "raster",
+            source: "noaa-radar",
+            paint: { "raster-opacity": .92, "raster-fade-duration": 180 }
+          }
+        ]
+      },
+      center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
+      zoom: 9.8,
+      minZoom: 7,
+      maxZoom: 16,
+      maxBounds: [[-70.5, 15.5], [-62.5, 21.5]],
+      dragRotate: false,
+      touchPitch: false,
+      pitchWithRotate: false,
+      attributionControl: false
+    });
+
+    if (state.map.touchZoomRotate && typeof state.map.touchZoomRotate.disableRotation === "function") state.map.touchZoomRotate.disableRotation();
+    state.map.addControl(new window.maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    state.map.addControl(new window.maplibregl.AttributionControl({ compact: true }), "bottom-left");
+    state.map.on("load", function () {
+      var marker = document.createElement("div");
+      marker.className = "weather-host-map-marker";
+      marker.setAttribute("aria-label", "Casa Brisa");
+      new window.maplibregl.Marker({ element: marker }).setLngLat([CASA_BRISA.longitude, CASA_BRISA.latitude]).addTo(state.map);
+      state.mapReady = true;
+      renderMapLayer();
+    });
+    state.map.on("error", function (event) {
+      if (event && event.error) console.warn("NOAA weather map tile error", event.error.message);
+    });
   }
 
   function initializeWeatherFrame() {
@@ -413,6 +508,7 @@
     elements.swellPeriod = byId("swell-period");
     elements.coastOutlook = byId("coast-outlook");
     elements.mapFrame = byId("noaa-weather-frame");
+    elements.mapContainer = byId("local-weather-map");
     elements.mapImage = byId("noaa-weather-image");
     elements.mapSource = byId("weather-map-source");
     elements.mapCaption = byId("weather-map-caption");
@@ -421,6 +517,7 @@
     elements.mapError = byId("weather-map-error");
     elements.zoomIn = byId("weather-zoom-in");
     elements.zoomOut = byId("weather-zoom-out");
+    elements.imageZoom = byId("weather-image-zoom");
     elements.layerButtons = Array.prototype.slice.call(document.querySelectorAll(".weather-layer-tabs button[data-layer]"));
     elements.updated = byId("weather-updated");
     elements.toast = byId("weather-toast");
@@ -441,6 +538,7 @@
     renderAll();
     bindEvents();
     initializeWeatherFrame();
+    initializeRadarMap();
     loadWeather();
     window.setInterval(loadWeather, 15 * 60 * 1000);
   }

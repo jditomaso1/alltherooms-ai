@@ -372,6 +372,10 @@
 .weather-official-frame::before { content: ""; position: absolute; z-index: 0; inset: -26px; background-image: var(--weather-frame-image); background-position: center; background-size: cover; filter: blur(22px) saturate(.72); opacity: 0; transform: scale(1.06); transition: opacity .25s; }
 .weather-official-frame.is-zoomed-out::before { opacity: .34; }
 .weather-official-frame[data-layer="satellite"].is-zoomed-out::before { opacity: .42; filter: blur(22px) saturate(.7) brightness(.62); }
+.weather-official-frame > #local-weather-map { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; }
+.weather-official-frame > #local-weather-map[hidden],
+.weather-official-frame > img[hidden],
+.weather-image-zoom[hidden] { display: none; }
 .weather-official-frame > img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 68%; }
 .weather-official-frame[data-layer="satellite"] > img { object-position: center 54%; }
 .weather-official-frame.is-zoomed-out > img { object-fit: contain; object-position: center; filter: drop-shadow(0 0 22px rgba(6,26,54,.18)); }
@@ -389,6 +393,11 @@
 .weather-image-zoom button + button { border-top: 1px solid #dfe5ed; }
 .weather-image-zoom button:hover:not(:disabled) { background: #f0f4f9; }
 .weather-image-zoom button:disabled { cursor: default; color: #b5beca; }
+.weather-official-frame .maplibregl-canvas { outline: none; }
+.weather-official-frame .maplibregl-ctrl-group { overflow: hidden; border: 1px solid rgba(7,28,56,.12); border-radius: 10px; box-shadow: 0 10px 28px rgba(7,28,56,.18); }
+.weather-official-frame .maplibregl-ctrl-group button { width: 40px; height: 38px; }
+.weather-official-frame .maplibregl-ctrl-attrib { border-radius: 7px; background: rgba(255,255,255,.91); color: #667386; font-size: 9px; }
+.weather-host-map-marker { width: 22px; height: 22px; border: 6px solid var(--weather-navy); border-radius: 50%; background: var(--weather-yellow); box-shadow: 0 0 0 2px #fff, 0 6px 16px rgba(6,26,54,.28); }
 .weather-map-loading, .weather-map-error { position: absolute; z-index: 5; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; background: #eef3f6; color: var(--weather-navy); }
 .weather-map-error[hidden] { display: none; }
 .weather-map-loading.is-ready { opacity: 0; pointer-events: none; transition: opacity .35s; }
