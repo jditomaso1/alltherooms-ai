@@ -1,26 +1,34 @@
 (function () {
   "use strict";
 
-  var CASA_BRISA = { latitude: 18.3185, longitude: -67.2455 };
   var FORECAST_URL = "https://api.open-meteo.com/v1/forecast?latitude=18.3185&longitude=-67.2455&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,uv_index,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,precipitation_sum,rain_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FPuerto_Rico&forecast_days=8";
   var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=18.3185&longitude=-67.2455&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wave_direction_dominant,wave_period_max,swell_wave_height_max,swell_wave_direction_dominant,swell_wave_period_max&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico&forecast_days=8";
   var ALERTS_URL = "https://api.weather.gov/alerts/active?point=18.3185,-67.2455";
-  var NOAA_SATELLITE_WMS = "https://nowcoast.noaa.gov/geoserver/satellite/wms?service=WMS&request=GetMap&version=1.1.1&layers=goes_longwave_imagery&styles=goes-lir&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_RADAR_WMS = "https://nowcoast.noaa.gov/geoserver/weather_radar/wms?service=WMS&request=GetMap&version=1.1.1&layers=caribbean_base_reflectivity_mosaic&styles=weather_radar_base_reflectivity&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_WIND_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_wind/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_wind_speed&styles=wind_speed&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_CLOUDS_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_sky/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_total_sky_cover&styles=total_sky_cover&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_TEMPERATURE_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_temperature/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_air_temperature&styles=air_temperature&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_SEA_WMS = "https://nowcoast.noaa.gov/geoserver/ndfd_wave/wms?service=WMS&request=GetMap&version=1.1.1&layers=puerto_rico_significant_wave_height&styles=significant_wave_height&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
-  var NOAA_ALERTS_WMS = "https://nowcoast.noaa.gov/geoserver/alerts/wms?service=WMS&request=GetMap&version=1.1.1&layers=watches_warnings_advisories&styles=watches_warnings_advisories&format=image/png&transparent=true&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}";
+  var NOAA_PRODUCTS = {
+    radar: {
+      src: "https://radar.weather.gov/ridge/standard/TJUA_loop.gif",
+      alt: "Animated National Weather Service radar loop for Puerto Rico and the U.S. Virgin Islands",
+      source: "NWS San Juan · animated Puerto Rico radar",
+      caption: "Official NWS radar loop for Puerto Rico · updates automatically",
+      link: "https://radar.weather.gov/",
+      linkLabel: "Open full NOAA radar ↗"
+    },
+    satellite: {
+      src: "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/pr/GEOCOLOR/1200x1200.jpg",
+      alt: "Live NOAA GOES-19 GeoColor satellite image for Puerto Rico and the Caribbean",
+      source: "NOAA GOES-19 · live Puerto Rico GeoColor",
+      caption: "Official NOAA satellite image for Puerto Rico · updates automatically",
+      link: "https://www.weather.gov/sju/satellite",
+      linkLabel: "Open NOAA satellite page ↗"
+    }
+  };
 
   var state = {
     forecast: null,
     marine: null,
     alerts: [],
     alertsAvailable: false,
-    activeLayer: "satellite",
-    map: null,
-    mapReady: false,
+    activeLayer: "radar",
     loading: false
   };
 
@@ -265,98 +273,32 @@
     }
   }
 
-  function updateMapKey(layer) {
-    var labels = {
-      satellite: ["Colder cloud tops", "Warmer / clearer"], radar: ["No echo / light rain", "Heavier cells"], wind: ["Lighter wind", "Stronger wind"],
-      cloud: ["Clearer", "Heavier cloud"], temperature: ["Cooler", "Warmer"], marine: ["Lower waves", "Higher waves"],
-      alerts: ["Official alert area", "NWS alert"]
-    }[layer];
-    elements.mapKey.innerHTML = '<span><i></i>' + labels[0] + '</span><b></b><span>' + labels[1] + '</span>';
-    elements.mapKey.dataset.layer = layer;
-  }
-
-  function renderMapLayer() {
-    if (!state.mapReady) return;
-    var layerIds = {
-      satellite: "noaa-satellite",
-      radar: "noaa-radar",
-      wind: "noaa-wind",
-      cloud: "noaa-clouds",
-      temperature: "noaa-temperature",
-      marine: "noaa-sea",
-      alerts: "noaa-alerts"
-    };
-    Object.keys(layerIds).forEach(function (layer) {
-      state.map.setLayoutProperty(layerIds[layer], "visibility", layer === state.activeLayer ? "visible" : "none");
-    });
-    state.map.setPaintProperty("weather-base", "raster-opacity", state.activeLayer === "satellite" ? .58 : .72);
-    updateMapKey(state.activeLayer);
-    var sourceLabels = {
-      satellite: "NOAA GOES · infrared satellite",
-      radar: "NOAA / NWS · Caribbean radar · clear areas appear empty",
-      wind: "NOAA NDFD · wind speed forecast",
-      cloud: "NOAA NDFD · total sky cover",
-      temperature: "NOAA NDFD · air temperature forecast",
-      marine: "NOAA NDFD · significant wave height",
-      alerts: "NOAA / NWS · watches, warnings and advisories"
-    };
-    elements.mapSource.querySelector("span").textContent = sourceLabels[state.activeLayer];
-    elements.mapLoading.classList.add("is-ready");
+  function renderMapLayer(forceRefresh) {
+    var product = NOAA_PRODUCTS[state.activeLayer] || NOAA_PRODUCTS.radar;
+    var imageSource = product.src;
+    if (forceRefresh) imageSource += (imageSource.indexOf("?") === -1 ? "?" : "&") + "refresh=" + Date.now();
+    elements.mapFrame.dataset.layer = state.activeLayer;
+    elements.mapSource.querySelector("span").textContent = product.source;
+    elements.mapCaption.textContent = product.caption;
+    elements.mapLink.href = product.link;
+    elements.mapLink.textContent = product.linkLabel;
+    elements.mapImage.alt = product.alt;
     elements.mapError.hidden = true;
+    elements.mapLoading.classList.remove("is-ready");
+    if (elements.mapImage.getAttribute("src") !== imageSource) elements.mapImage.src = imageSource;
+    if (elements.mapImage.complete && elements.mapImage.naturalWidth > 0) elements.mapLoading.classList.add("is-ready");
   }
 
-  function initializeMap() {
-    if (!window.maplibregl || typeof window.maplibregl.Map !== "function") {
-      elements.mapLoading.hidden = true;
+  function initializeWeatherFrame() {
+    elements.mapImage.addEventListener("load", function () {
+      elements.mapLoading.classList.add("is-ready");
+      elements.mapError.hidden = true;
+    });
+    elements.mapImage.addEventListener("error", function () {
+      elements.mapLoading.classList.add("is-ready");
       elements.mapError.hidden = false;
-      return;
-    }
-    state.map = new window.maplibregl.Map({
-      container: "local-weather-map",
-      style: {
-        version: 8,
-        sources: {
-          base: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" },
-          "noaa-satellite-source": { type: "raster", tiles: [NOAA_SATELLITE_WMS], tileSize: 256, attribution: "NOAA nowCOAST/GOES" },
-          "noaa-radar-source": { type: "raster", tiles: [NOAA_RADAR_WMS], tileSize: 256, attribution: "NOAA/NWS" },
-          "noaa-wind-source": { type: "raster", tiles: [NOAA_WIND_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
-          "noaa-clouds-source": { type: "raster", tiles: [NOAA_CLOUDS_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
-          "noaa-temperature-source": { type: "raster", tiles: [NOAA_TEMPERATURE_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
-          "noaa-sea-source": { type: "raster", tiles: [NOAA_SEA_WMS], tileSize: 256, attribution: "NOAA/NDFD" },
-          "noaa-alerts-source": { type: "raster", tiles: [NOAA_ALERTS_WMS], tileSize: 256, attribution: "NOAA/NWS" }
-        },
-        layers: [
-          { id: "weather-background", type: "background", paint: { "background-color": "#dce8eb" } },
-          { id: "weather-base", type: "raster", source: "base", paint: { "raster-saturation": -.88, "raster-contrast": -.12, "raster-brightness-min": .28, "raster-brightness-max": .96, "raster-opacity": .58 } },
-          { id: "noaa-satellite", type: "raster", source: "noaa-satellite-source", layout: { visibility: "visible" }, paint: { "raster-opacity": .68, "raster-contrast": .08, "raster-fade-duration": 120 } },
-          { id: "noaa-radar", type: "raster", source: "noaa-radar-source", layout: { visibility: "none" }, paint: { "raster-opacity": .92, "raster-fade-duration": 120 } },
-          { id: "noaa-wind", type: "raster", source: "noaa-wind-source", layout: { visibility: "none" }, paint: { "raster-opacity": .82, "raster-fade-duration": 120 } },
-          { id: "noaa-clouds", type: "raster", source: "noaa-clouds-source", layout: { visibility: "none" }, paint: { "raster-opacity": .78, "raster-fade-duration": 120 } },
-          { id: "noaa-temperature", type: "raster", source: "noaa-temperature-source", layout: { visibility: "none" }, paint: { "raster-opacity": .80, "raster-fade-duration": 120 } },
-          { id: "noaa-sea", type: "raster", source: "noaa-sea-source", layout: { visibility: "none" }, paint: { "raster-opacity": .84, "raster-fade-duration": 120 } },
-          { id: "noaa-alerts", type: "raster", source: "noaa-alerts-source", layout: { visibility: "none" }, paint: { "raster-opacity": .86, "raster-fade-duration": 120 } }
-        ]
-      },
-      center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
-      zoom: 10.5,
-      minZoom: 9.2,
-      maxZoom: 16,
-      maxBounds: [[-67.48, 18.08], [-66.98, 18.58]],
-      dragRotate: false,
-      touchPitch: false,
-      attributionControl: false
     });
-    state.map.addControl(new window.maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    state.map.addControl(new window.maplibregl.AttributionControl({ compact: true }), "bottom-right");
-    state.map.on("load", function () {
-      var marker = document.createElement("div");
-      marker.className = "weather-host-map-marker";
-      marker.setAttribute("aria-label", "Casa Brisa");
-      new window.maplibregl.Marker({ element: marker, anchor: "center" }).setLngLat([CASA_BRISA.longitude, CASA_BRISA.latitude]).addTo(state.map);
-      state.mapReady = true;
-      renderMapLayer();
-    });
-    state.map.on("error", function () { /* Individual tile errors should not hide the forecast. */ });
+    renderMapLayer();
   }
 
   function setLayer(layer) {
@@ -461,17 +403,20 @@
     elements.swellHeight = byId("swell-height");
     elements.swellPeriod = byId("swell-period");
     elements.coastOutlook = byId("coast-outlook");
-    elements.mapKey = byId("weather-map-key");
+    elements.mapFrame = byId("noaa-weather-frame");
+    elements.mapImage = byId("noaa-weather-image");
     elements.mapSource = byId("weather-map-source");
+    elements.mapCaption = byId("weather-map-caption");
+    elements.mapLink = byId("weather-map-link");
     elements.mapLoading = byId("weather-map-loading");
     elements.mapError = byId("weather-map-error");
-    elements.layerButtons = Array.prototype.slice.call(document.querySelectorAll("[data-layer]"));
+    elements.layerButtons = Array.prototype.slice.call(document.querySelectorAll(".weather-layer-tabs button[data-layer]"));
     elements.updated = byId("weather-updated");
     elements.toast = byId("weather-toast");
   }
 
   function bindEvents() {
-    elements.refresh.addEventListener("click", loadWeather);
+    elements.refresh.addEventListener("click", function () { loadWeather(); renderMapLayer(true); });
     byId("copy-weather-note").addEventListener("click", copyGuestUpdate);
     elements.layerButtons.forEach(function (button) { button.addEventListener("click", function () { setLayer(button.dataset.layer); }); });
   }
@@ -482,7 +427,7 @@
     state.marine = fallbackMarine();
     renderAll();
     bindEvents();
-    initializeMap();
+    initializeWeatherFrame();
     loadWeather();
     window.setInterval(loadWeather, 15 * 60 * 1000);
   }

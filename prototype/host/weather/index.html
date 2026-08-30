@@ -10,10 +10,8 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=8">
   <link rel="shortcut icon" href="/favicon.svg?v=8">
   <link rel="stylesheet" href="/_next/static/css/index.jyET6qeL.css">
-  <link rel="stylesheet" href="/assets/vendor/maplibre/maplibre-gl.css?v=5.12.0">
-  <link rel="stylesheet" href="/assets/css/local-weather-v2.css?v=2">
-  <script defer src="/assets/vendor/maplibre/maplibre-gl.js?v=5.12.0"></script>
-  <script defer src="/assets/js/local-weather.js?v=4"></script>
+  <link rel="stylesheet" href="/assets/css/local-weather-v2.css?v=3">
+  <script defer src="/assets/js/local-weather.js?v=5"></script>
 </head>
 <body>
   <div class="host-app-shell host-control-shell">
@@ -101,31 +99,25 @@
 
         <section class="weather-map-card-live host-surface" aria-labelledby="weather-map-title">
           <header class="weather-map-header">
-            <div class="weather-section-heading"><div><p>NOAA weather map</p><h3 id="weather-map-title">See the atmosphere over Rincón</h3></div></div>
-            <div class="weather-layer-tabs" role="group" aria-label="Weather map layer">
-              <button class="active" data-layer="satellite" type="button" aria-pressed="true">Satellite</button>
-              <button data-layer="radar" type="button" aria-pressed="false">Radar</button>
-              <button data-layer="wind" type="button" aria-pressed="false">Wind</button>
-              <button data-layer="cloud" type="button" aria-pressed="false">Clouds</button>
-              <button data-layer="temperature" type="button" aria-pressed="false">Temperature</button>
-              <button data-layer="marine" type="button" aria-pressed="false">Sea</button>
-              <button data-layer="alerts" type="button" aria-pressed="false">Alerts</button>
+            <div class="weather-section-heading"><div><p>Official NOAA imagery</p><h3 id="weather-map-title">See real weather around Rincón</h3></div></div>
+            <div class="weather-layer-tabs" role="group" aria-label="Official NOAA weather product">
+              <button class="active" data-layer="radar" type="button" aria-pressed="true">Radar</button>
+              <button data-layer="satellite" type="button" aria-pressed="false">Satellite</button>
             </div>
           </header>
-          <div class="weather-map-stage">
-            <div id="local-weather-map" aria-label="Interactive live weather map centered on Casa Brisa"></div>
-            <div class="weather-map-key" id="weather-map-key" data-layer="satellite"><span><i></i>Colder cloud tops</span><b></b><span>Warmer / clearer</span></div>
-            <div class="weather-map-property"><i></i><span><small>Active property</small><strong>Casa Brisa</strong></span></div>
-            <div class="weather-map-source" id="weather-map-source"><i></i><span>NOAA GOES · latest imagery</span></div>
-            <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading NOAA weather layers…</span></div>
-            <div class="weather-map-error" id="weather-map-error" hidden><strong>Live map data is unavailable.</strong><span>The forecast panels above are still available.</span></div>
+          <div class="weather-official-frame" id="noaa-weather-frame" data-layer="radar">
+            <img id="noaa-weather-image" src="https://radar.weather.gov/ridge/standard/TJUA_loop.gif" alt="Animated National Weather Service radar loop for Puerto Rico and the U.S. Virgin Islands">
+            <div class="weather-map-source" id="weather-map-source"><i></i><span>NWS San Juan · animated Puerto Rico radar</span></div>
+            <div class="weather-frame-location"><i></i><span><small>Region</small><strong>Rincón · western Puerto Rico</strong></span></div>
+            <div class="weather-map-loading" id="weather-map-loading"><i></i><span>Loading official NOAA imagery…</span></div>
+            <div class="weather-map-error" id="weather-map-error" hidden><strong>NOAA imagery is temporarily unavailable.</strong><span>The live forecast panels above are still available.</span></div>
           </div>
-          <footer class="weather-map-footer"><span>Official NOAA nowCOAST layers · centered on Rincón</span><a href="https://nowcoast.noaa.gov/?BOX=-67.42%3A18.15%3A-67.04%3A18.48" target="_blank" rel="noopener">Open full NOAA map ↗</a></footer>
+          <footer class="weather-map-footer"><span id="weather-map-caption">Official NWS radar loop for Puerto Rico · updates automatically</span><a id="weather-map-link" href="https://radar.weather.gov/" target="_blank" rel="noopener">Open full NOAA radar ↗</a></footer>
         </section>
 
         <footer class="weather-data-note">
           <span id="weather-updated">Awaiting live update</span>
-          <p>Forecast panels by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Weather-map layers and official alerts by <a href="https://nowcoast.noaa.gov/" target="_blank" rel="noopener">NOAA nowCOAST / National Weather Service</a>. Map data © OpenStreetMap contributors.</p>
+          <p>Forecast panels by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Radar, satellite imagery and official alerts by <a href="https://www.weather.gov/sju/" target="_blank" rel="noopener">NOAA / National Weather Service</a>.</p>
         </footer>
         <div class="weather-toast" id="weather-toast" role="status" aria-live="polite"></div>
       </main>
