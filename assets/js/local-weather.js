@@ -26,6 +26,8 @@
     }
     return points;
   }());
+  var WEATHER_SURFACE_COORDINATES = [[-67.37, 18.43], [-67.02, 18.43], [-67.02, 18.17], [-67.37, 18.17]];
+  var MARINE_SURFACE_COORDINATES = [[-67.43, 18.43], [-67.235, 18.43], [-67.235, 18.17], [-67.43, 18.17]];
 
   var state = {
     forecast: null,
@@ -35,6 +37,7 @@
     weatherGrid: [],
     marineGrid: [],
     activeLayer: "satellite",
+    surfaceImages: {},
     map: null,
     mapReady: false,
     loading: false
@@ -345,15 +348,70 @@
     });
   }
 
-  function heatmapColors(layer) {
-    var palettes = {
-      wind: ["rgba(41,189,214,0)", "#52cfdb", "#4f72ff", "#ffbd35", "#ff625f"],
-      cloud: ["rgba(84,199,216,0)", "#89c8df", "#8799b5", "#65738a", "#344158"],
-      temperature: ["rgba(79,114,255,0)", "#4f72ff", "#55c5d5", "#ffbd35", "#ff625f"],
-      marine: ["rgba(41,189,214,0)", "#29bdd6", "#3f6fff", "#765ad1", "#ff625f"]
-    };
-    var palette = palettes[layer] || palettes.wind;
-    return ["interpolate", ["linear"], ["heatmap-density"], 0, palette[0], .22, palette[1], .48, palette[2], .74, palette[3], 1, palette[4]];
+  function surfaceSettings(layer) {
+    return {
+      wind: { min: 0, max: 30, colors: [[72, 195, 210], [71, 112, 238], [255, 189, 53], [255, 98, 95]], opacity: .34, coordinates: WEATHER_SURFACE_COORDINATES },
+      cloud: { min: 0, max: 100, colors: [[170, 218, 225], [132, 174, 207], [103, 119, 147], [48, 62, 83]], opacity: .29, coordinates: WEATHER_SURFACE_COORDINATES },
+      temperature: { min: 72, max: 94, colors: [[80, 119, 242], [81, 190, 205], [255, 195, 70], [245, 98, 91]], opacity: .34, coordinates: WEATHER_SURFACE_COORDINATES },
+      marine: { min: 0, max: 7, colors: [[63, 192, 210], [63, 111, 255], [112, 89, 203], [246, 98, 95]], opacity: .32, coordinates: MARINE_SURFACE_COORDINATES }
+    }[layer];
+  }
+
+  function colorFromRamp(colors, amount) {
+    var position = clamp(amount, 0, 1) * (colors.length - 1);
+    var start = Math.floor(position);
+    var end = Math.min(colors.length - 1, start + 1);
+    var mix = position - start;
+    return colors[start].map(function (channel, index) { return Math.round(channel + (colors[end][index] - channel) * mix); });
+  }
+
+  function surfaceImageForLayer(layer) {
+    if (state.surfaceImages[layer]) return state.surfaceImages[layer];
+    var settings = surfaceSettings(layer);
+    var records = (layer === "marine" ? state.marineGrid : state.weatherGrid).map(function (record) {
+      return { longitude: record.longitude, latitude: record.latitude, value: Number(layerValue(record, layer)) };
+    }).filter(function (record) { return Number.isFinite(record.value); });
+    if (!settings || !records.length) return null;
+    var canvas = document.createElement("canvas");
+    canvas.width = 420;
+    canvas.height = 312;
+    var context = canvas.getContext("2d");
+    var image = context.createImageData(canvas.width, canvas.height);
+    var north = settings.coordinates[0][1];
+    var south = settings.coordinates[2][1];
+    var west = settings.coordinates[0][0];
+    var east = settings.coordinates[1][0];
+    var cosine = Math.cos(((north + south) / 2) * Math.PI / 180);
+    for (var y = 0; y < canvas.height; y += 1) {
+      var latitude = north - (north - south) * y / (canvas.height - 1);
+      for (var x = 0; x < canvas.width; x += 1) {
+        var longitude = west + (east - west) * x / (canvas.width - 1);
+        var weightedValue = 0;
+        var totalWeight = 0;
+        for (var index = 0; index < records.length; index += 1) {
+          var deltaX = (longitude - records[index].longitude) * cosine;
+          var deltaY = latitude - records[index].latitude;
+          var distanceSquared = deltaX * deltaX + deltaY * deltaY;
+          var weight = 1 / Math.pow(distanceSquared + .000018, 1.2);
+          weightedValue += records[index].value * weight;
+          totalWeight += weight;
+        }
+        var value = weightedValue / totalWeight;
+        var color = colorFromRamp(settings.colors, (value - settings.min) / (settings.max - settings.min));
+        var horizontalFade = Math.min(1, x / 50, (canvas.width - 1 - x) / 50);
+        var verticalFade = Math.min(1, y / 40, (canvas.height - 1 - y) / 40);
+        var edgeFade = clamp(Math.min(horizontalFade, verticalFade), 0, 1);
+        edgeFade = edgeFade * edgeFade * (3 - 2 * edgeFade);
+        var offset = (y * canvas.width + x) * 4;
+        image.data[offset] = color[0];
+        image.data[offset + 1] = color[1];
+        image.data[offset + 2] = color[2];
+        image.data[offset + 3] = Math.round(255 * edgeFade);
+      }
+    }
+    context.putImageData(image, 0, 0);
+    state.surfaceImages[layer] = { image: canvas, coordinates: settings.coordinates, opacity: settings.opacity };
+    return state.surfaceImages[layer];
   }
 
   function alertGeoJson() {
@@ -376,14 +434,20 @@
     state.map.setLayoutProperty("noaa-warning-raster", "visibility", alertVisibility);
     state.map.setLayoutProperty("official-alert-fill", "visibility", alertVisibility);
     state.map.setLayoutProperty("official-alert-line", "visibility", alertVisibility);
-    state.map.setLayoutProperty("weather-surface", "visibility", surfaceVisibility);
+    state.map.setLayoutProperty("weather-surface-image", "visibility", surfaceVisibility);
     state.map.setLayoutProperty("weather-points", "visibility", surfaceVisibility);
-    if (surfaceVisibility === "visible") state.map.setPaintProperty("weather-surface", "heatmap-color", heatmapColors(state.activeLayer));
-    state.map.setPaintProperty("weather-base", "raster-opacity", isSatellite ? .54 : .82);
+    if (surfaceVisibility === "visible") {
+      var surface = surfaceImageForLayer(state.activeLayer);
+      if (surface) {
+        state.map.getSource("weather-surface-image-source").updateImage({ image: surface.image, coordinates: surface.coordinates });
+        state.map.setPaintProperty("weather-surface-image", "raster-opacity", surface.opacity);
+      } else state.map.setLayoutProperty("weather-surface-image", "visibility", "none");
+    }
+    state.map.setPaintProperty("weather-base", "raster-opacity", isSatellite ? .72 : .84);
     updateMapKey(state.activeLayer);
     var sourceLabels = {
       satellite: "NOAA GOES · " + (currentIsDay ? "visible imagery" : "infrared imagery"),
-      radar: "NOAA MRMS · latest radar scan",
+      radar: "NOAA / NWS · Caribbean radar",
       wind: "Open-Meteo · continuous wind surface",
       cloud: "Open-Meteo · continuous cloud surface",
       temperature: "Open-Meteo · continuous temperature surface",
@@ -419,8 +483,8 @@
         layers: [
           { id: "weather-background", type: "background", paint: { "background-color": "#dce8eb" } },
           { id: "weather-base", type: "raster", source: "base", paint: { "raster-saturation": -.88, "raster-contrast": -.12, "raster-brightness-min": .28, "raster-brightness-max": .96, "raster-opacity": .54 } },
-          { id: "noaa-satellite-visible", type: "raster", source: "noaa-satellite-visible-source", layout: { visibility: "none" }, paint: { "raster-opacity": .62, "raster-contrast": .08, "raster-fade-duration": 180 } },
-          { id: "noaa-satellite-ir", type: "raster", source: "noaa-satellite-ir-source", layout: { visibility: "visible" }, paint: { "raster-opacity": .62, "raster-contrast": .16, "raster-fade-duration": 180 } },
+          { id: "noaa-satellite-visible", type: "raster", source: "noaa-satellite-visible-source", layout: { visibility: "none" }, paint: { "raster-opacity": .38, "raster-contrast": .03, "raster-brightness-min": .34, "raster-brightness-max": 1, "raster-fade-duration": 180 } },
+          { id: "noaa-satellite-ir", type: "raster", source: "noaa-satellite-ir-source", layout: { visibility: "visible" }, paint: { "raster-opacity": .32, "raster-contrast": .06, "raster-brightness-min": .4, "raster-brightness-max": 1, "raster-fade-duration": 180 } },
           { id: "noaa-radar", type: "raster", source: "noaa-radar-source", layout: { visibility: "none" }, paint: { "raster-opacity": .88, "raster-fade-duration": 120 } },
           { id: "noaa-warning-raster", type: "raster", source: "noaa-warning-source", layout: { visibility: "none" }, paint: { "raster-opacity": .72, "raster-fade-duration": 120 } }
         ]
@@ -441,7 +505,8 @@
       state.map.addLayer({ id: "official-alert-fill", type: "fill", source: "official-alert-areas", layout: { visibility: "none" }, paint: { "fill-color": "#ff625f", "fill-opacity": .22 } });
       state.map.addLayer({ id: "official-alert-line", type: "line", source: "official-alert-areas", layout: { visibility: "none" }, paint: { "line-color": "#d44240", "line-width": 2, "line-dasharray": [2, 1] } });
       state.map.addSource("weather-points", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-      state.map.addLayer({ id: "weather-surface", type: "heatmap", source: "weather-points", layout: { visibility: "none" }, paint: { "heatmap-weight": ["interpolate", ["linear"], ["get", "intensity"], 0, .08, 1, 1], "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 9, .84, 13, 1.18], "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 9, 84, 13, 138], "heatmap-opacity": .67, "heatmap-color": heatmapColors("wind") } });
+      state.map.addSource("weather-surface-image-source", { type: "image", coordinates: WEATHER_SURFACE_COORDINATES });
+      state.map.addLayer({ id: "weather-surface-image", type: "raster", source: "weather-surface-image-source", layout: { visibility: "none" }, paint: { "raster-opacity": .34, "raster-fade-duration": 0 } });
       state.map.addLayer({ id: "weather-points", type: "circle", source: "weather-points", layout: { visibility: "none" }, paint: { "circle-radius": 15, "circle-color": ["get", "color"], "circle-opacity": .01 } });
       var marker = document.createElement("div");
       marker.className = "weather-host-map-marker";
@@ -523,6 +588,7 @@
       state.alerts = state.alertsAvailable && Array.isArray(results[2].value.features) ? results[2].value.features : [];
       if (results[3].status === "fulfilled") state.weatherGrid = normalizeGridResponse(results[3].value, WEATHER_GRID);
       if (results[4].status === "fulfilled") state.marineGrid = normalizeGridResponse(results[4].value, MARINE_GRID);
+      state.surfaceImages = {};
       renderAll();
       updateLiveStatus(forecastLive);
       var updated = new Intl.DateTimeFormat("en-US", { timeZone: "America/Puerto_Rico", hour: "numeric", minute: "2-digit", month: "short", day: "numeric" }).format(new Date());
