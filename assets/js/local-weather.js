@@ -29,6 +29,7 @@
     alerts: [],
     alertsAvailable: false,
     activeLayer: "radar",
+    zoomedOut: false,
     loading: false
   };
 
@@ -278,6 +279,7 @@
     var imageSource = product.src;
     if (forceRefresh) imageSource += (imageSource.indexOf("?") === -1 ? "?" : "&") + "refresh=" + Date.now();
     elements.mapFrame.dataset.layer = state.activeLayer;
+    elements.mapFrame.style.setProperty("--weather-frame-image", 'url("' + imageSource + '")');
     elements.mapSource.querySelector("span").textContent = product.source;
     elements.mapCaption.textContent = product.caption;
     elements.mapLink.href = product.link;
@@ -309,6 +311,13 @@
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
     renderMapLayer();
+  }
+
+  function setImageZoom(zoomedOut) {
+    state.zoomedOut = Boolean(zoomedOut);
+    elements.mapFrame.classList.toggle("is-zoomed-out", state.zoomedOut);
+    elements.zoomOut.disabled = state.zoomedOut;
+    elements.zoomIn.disabled = !state.zoomedOut;
   }
 
   function showToast(message) {
@@ -410,6 +419,8 @@
     elements.mapLink = byId("weather-map-link");
     elements.mapLoading = byId("weather-map-loading");
     elements.mapError = byId("weather-map-error");
+    elements.zoomIn = byId("weather-zoom-in");
+    elements.zoomOut = byId("weather-zoom-out");
     elements.layerButtons = Array.prototype.slice.call(document.querySelectorAll(".weather-layer-tabs button[data-layer]"));
     elements.updated = byId("weather-updated");
     elements.toast = byId("weather-toast");
@@ -418,6 +429,8 @@
   function bindEvents() {
     elements.refresh.addEventListener("click", function () { loadWeather(); renderMapLayer(true); });
     byId("copy-weather-note").addEventListener("click", copyGuestUpdate);
+    elements.zoomIn.addEventListener("click", function () { setImageZoom(false); });
+    elements.zoomOut.addEventListener("click", function () { setImageZoom(true); });
     elements.layerButtons.forEach(function (button) { button.addEventListener("click", function () { setLayer(button.dataset.layer); }); });
   }
 
