@@ -31,7 +31,7 @@
 @keyframes ai-pulse { to { opacity: .25; transform: scale(.75); } }
 
 .ai-overview-grid { display: grid; gap: 12px; grid-template-columns: minmax(0, 1.25fr) minmax(340px, .75fr); margin: 0 auto 12px; max-width: 1500px; }
-.ai-score-card { align-items: center; display: flex; gap: 40px; min-height: 350px; padding: 38px; }
+.ai-score-card { align-items: center; display: flex; gap: 36px; min-height: 350px; padding: 32px; }
 .ai-score-ring { align-items: center; background: conic-gradient(var(--blue) 74%, #e5eaf1 0); border-radius: 50%; display: flex; flex: 0 0 204px; height: 204px; justify-content: center; position: relative; width: 204px; }
 .ai-score-ring::after { background: #fff; border-radius: 50%; content: ""; inset: 12px; position: absolute; }
 .ai-score-ring > span { align-items: center; display: flex; flex-direction: column; position: relative; z-index: 1; }
@@ -48,7 +48,7 @@
 .ai-score-copy > div { align-items: center; color: #8490a1; display: flex; font-size: 12px; gap: 9px; }
 .ai-score-copy > div span { background: #e0f7eb; border-radius: 999px; color: #178156; font-weight: 900; padding: 6px 8px; }
 
-.ai-readiness-card { overflow: hidden; padding: 25px; }
+.ai-readiness-card { overflow: hidden; padding: 22px; }
 .ai-readiness-card > header,
 .ai-prompt-card > header,
 .ai-recommendations > header { align-items: start; display: flex; justify-content: space-between; }
@@ -57,14 +57,42 @@
 .ai-recommendations h3 { font-size: 27px; letter-spacing: -.035em; margin: 0; }
 .ai-readiness-card > header > span,
 .ai-prompt-card > header > span { background: #dff8eb; border-radius: 999px; color: #167a4d; font-size: 10px; font-weight: 900; padding: 7px 10px; text-transform: uppercase; }
-.ai-readiness-list { margin-top: 19px; }
-.ai-readiness-list > div { align-items: center; border-top: 1px solid #e5e9ef; display: grid; gap: 12px; grid-template-columns: 34px 1fr auto; padding: 16px 0; }
+.ai-readiness-list { margin-top: 16px; }
+.ai-readiness-list > div { align-items: center; border-top: 1px solid #e5e9ef; display: grid; gap: 12px; grid-template-columns: 34px 1fr auto; padding: 13px 0; }
 .ai-readiness-list > div > i { align-items: center; background: #e0f7eb; border-radius: 50%; color: #168258; display: flex; font-size: 11px; font-style: normal; font-weight: 900; height: 32px; justify-content: center; }
 .ai-readiness-list > div > span { display: grid; }
 .ai-readiness-list strong { font-size: 14px; }
 .ai-readiness-list small { color: #8b96a6; font-size: 11px; margin-top: 5px; }
 .ai-readiness-list b { color: #23845d; font-size: 11px; }
-.ai-readiness-card > footer { border-top: 1px solid #e5e9ef; color: #929cab; font-size: 11px; line-height: 1.55; padding-top: 15px; }
+.ai-readiness-card > footer {
+  align-items: start;
+  background: #f5f8ff;
+  border: 0;
+  border-radius: 10px;
+  color: #6f7d91;
+  display: grid;
+  font-size: 12px;
+  gap: 11px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  line-height: 1.5;
+  margin-top: 13px;
+  padding: 13px 14px;
+}
+.ai-readiness-card > footer > i {
+  align-items: center;
+  background: #e2eaff;
+  border-radius: 50%;
+  color: var(--blue);
+  display: flex;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+.ai-readiness-card > footer > span { display: grid; min-width: 0; }
+.ai-readiness-card > footer strong { color: var(--ink); font-size: 12px; margin-bottom: 2px; }
 
 .ai-dimension-grid { display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); margin: 0 auto 12px; max-width: 1500px; }
 .ai-dimension-grid article { min-height: 185px; padding: 23px; }
