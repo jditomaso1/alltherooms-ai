@@ -278,7 +278,6 @@
     var imageSource = product.src;
     if (forceRefresh) imageSource += (imageSource.indexOf("?") === -1 ? "?" : "&") + "refresh=" + Date.now();
     elements.mapFrame.dataset.layer = state.activeLayer;
-    elements.mapFrame.style.setProperty("--weather-frame-image", 'url("' + imageSource + '")');
     elements.mapSource.querySelector("span").textContent = product.source;
     elements.mapCaption.textContent = product.caption;
     elements.mapLink.href = product.link;
