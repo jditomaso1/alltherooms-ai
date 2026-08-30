@@ -1,0 +1,10 @@
+@media (min-width: 1121px) {
+  .host-page-intro > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .host-page-intro h2 {
+    white-space: nowrap;
+  }
+}
