@@ -410,7 +410,7 @@
       }
     }
     context.putImageData(image, 0, 0);
-    state.surfaceImages[layer] = { image: canvas, coordinates: settings.coordinates, opacity: settings.opacity };
+    state.surfaceImages[layer] = { url: canvas.toDataURL("image/png"), coordinates: settings.coordinates, opacity: settings.opacity };
     return state.surfaceImages[layer];
   }
 
@@ -439,7 +439,7 @@
     if (surfaceVisibility === "visible") {
       var surface = surfaceImageForLayer(state.activeLayer);
       if (surface) {
-        state.map.getSource("weather-surface-image-source").updateImage({ image: surface.image, coordinates: surface.coordinates });
+        state.map.getSource("weather-surface-image-source").updateImage({ url: surface.url, coordinates: surface.coordinates });
         state.map.setPaintProperty("weather-surface-image", "raster-opacity", surface.opacity);
       } else state.map.setLayoutProperty("weather-surface-image", "visibility", "none");
     }
@@ -447,7 +447,7 @@
     updateMapKey(state.activeLayer);
     var sourceLabels = {
       satellite: "NOAA GOES · " + (currentIsDay ? "visible imagery" : "infrared imagery"),
-      radar: "NOAA / NWS · Caribbean radar",
+      radar: "NOAA / NWS · live radar · clear areas appear empty",
       wind: "Open-Meteo · continuous wind surface",
       cloud: "Open-Meteo · continuous cloud surface",
       temperature: "Open-Meteo · continuous temperature surface",
@@ -505,7 +505,10 @@
       state.map.addLayer({ id: "official-alert-fill", type: "fill", source: "official-alert-areas", layout: { visibility: "none" }, paint: { "fill-color": "#ff625f", "fill-opacity": .22 } });
       state.map.addLayer({ id: "official-alert-line", type: "line", source: "official-alert-areas", layout: { visibility: "none" }, paint: { "line-color": "#d44240", "line-width": 2, "line-dasharray": [2, 1] } });
       state.map.addSource("weather-points", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-      state.map.addSource("weather-surface-image-source", { type: "image", coordinates: WEATHER_SURFACE_COORDINATES });
+      var emptySurface = document.createElement("canvas");
+      emptySurface.width = 2;
+      emptySurface.height = 2;
+      state.map.addSource("weather-surface-image-source", { type: "image", url: emptySurface.toDataURL("image/png"), coordinates: WEATHER_SURFACE_COORDINATES });
       state.map.addLayer({ id: "weather-surface-image", type: "raster", source: "weather-surface-image-source", layout: { visibility: "none" }, paint: { "raster-opacity": .34, "raster-fade-duration": 0 } });
       state.map.addLayer({ id: "weather-points", type: "circle", source: "weather-points", layout: { visibility: "none" }, paint: { "circle-radius": 15, "circle-color": ["get", "color"], "circle-opacity": .01 } });
       var marker = document.createElement("div");
