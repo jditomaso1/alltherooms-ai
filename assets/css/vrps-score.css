@@ -7,6 +7,131 @@
   margin: 0;
 }
 
+.host-section-heading p {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.host-section-heading h3 {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.host-section-heading > span {
+  font-size: 12px;
+}
+
+.vrps-score-card {
+  min-height: 320px;
+  padding: 30px;
+}
+
+.vrps-orbit {
+  flex-basis: 172px;
+  height: 172px;
+  width: 172px;
+}
+
+.vrps-orbit strong {
+  font-size: 64px;
+}
+
+.vrps-orbit small {
+  font-size: 10px;
+}
+
+.vrps-score-card > div:last-child > p {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.vrps-score-card h3 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.vrps-score-card > div:last-child > span {
+  font-size: 13px;
+}
+
+.score-change {
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 22px;
+  padding: 11px 12px;
+}
+
+.vrps-trend-card,
+.comparison-card,
+.score-actions {
+  padding: 26px;
+}
+
+.vrps-trend-bars {
+  height: 220px;
+  padding-top: 32px;
+}
+
+.vrps-trend-bars b {
+  font-size: 10px;
+  top: -20px;
+}
+
+.vrps-trend-bars > div:last-child b {
+  top: 10px;
+}
+
+.vrps-trend-bars span {
+  font-size: 11px;
+  margin-top: 10px;
+}
+
+.comparison-row {
+  padding: 20px 0;
+}
+
+.comparison-row strong {
+  font-size: 14px;
+}
+
+.comparison-row small {
+  font-size: 11px;
+}
+
+.comparison-row > div {
+  gap: 8px;
+}
+
+.comparison-row > div > span {
+  height: 8px;
+}
+
+.score-actions > div:not(.host-section-heading) {
+  gap: 14px;
+  grid-template-columns: 38px 1fr auto;
+  padding: 20px 0;
+}
+
+.score-actions > div > i {
+  font-size: 10px;
+  height: 38px;
+}
+
+.score-actions > div strong {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.score-actions > div small {
+  font-size: 11px;
+  line-height: 1.4;
+  margin-top: 5px;
+}
+
+.score-actions > div > b {
+  font-size: 12px;
+}
+
 @media (min-width: 1121px) {
   .host-page-intro > div:first-child {
     flex: 1 1 auto;
@@ -21,5 +146,17 @@
 @media (max-width: 760px) {
   .host-page-intro h2 {
     font-size: 42px;
+  }
+
+  .host-section-heading h3 {
+    font-size: 26px;
+  }
+
+  .vrps-score-card h3 {
+    font-size: 28px;
+  }
+
+  .vrps-orbit strong {
+    font-size: 58px;
   }
 }
