@@ -5,19 +5,19 @@
   var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=18.3185&longitude=-67.2455&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wave_direction_dominant,wave_period_max,swell_wave_height_max,swell_wave_direction_dominant,swell_wave_period_max&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico&forecast_days=8";
   var ALERTS_URL = "https://api.weather.gov/alerts/active?point=18.3185,-67.2455";
   var CASA_BRISA = { latitude: 18.3185, longitude: -67.2455 };
-  var NOAA_RADAR_WMS = "https://nowcoast.noaa.gov/geoserver/weather_radar/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=caribbean_base_reflectivity_mosaic&STYLES=weather_radar_base_reflectivity&SRS=EPSG:3857&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}";
+  var NOAA_RADAR_WMS = "https://opengeo.ncep.noaa.gov/geoserver/tjua/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=tjua_sr_bref&STYLES=radar_reflectivity&SRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}";
+  var NOAA_SATELLITE_IMAGE = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/pr/GEOCOLOR/2400x2400.jpg";
+  var NOAA_SATELLITE_COORDINATES = [[-73.2, 25.2], [-58.5, 25.2], [-58.5, 10.5], [-73.2, 10.5]];
   var NOAA_PRODUCTS = {
     radar: {
-      source: "NOAA / NWS · live Caribbean radar",
-      caption: "Official NOAA/NWS radar layer · interactive map centered on Rincón",
+      source: "NOAA / NWS · San Juan super-resolution radar",
+      caption: "Official NOAA/NWS super-resolution radar · interactive Rincón view",
       link: "https://radar.weather.gov/",
       linkLabel: "Open full NOAA radar ↗"
     },
     satellite: {
-      src: "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/pr/GEOCOLOR/1200x1200.jpg",
-      alt: "Live NOAA GOES-19 GeoColor satellite image for Puerto Rico and the Caribbean",
-      source: "NOAA GOES-19 · live Puerto Rico GeoColor",
-      caption: "Official NOAA satellite image for Puerto Rico · updates automatically",
+      source: "NOAA GOES-19 · interactive Puerto Rico GeoColor",
+      caption: "Official NOAA GOES-19 GeoColor · interactive regional view centered on Rincón",
       link: "https://www.weather.gov/sju/satellite",
       linkLabel: "Open NOAA satellite page ↗"
     }
@@ -29,7 +29,6 @@
     alerts: [],
     alertsAvailable: false,
     activeLayer: "radar",
-    zoomedOut: false,
     loading: false,
     map: null,
     mapReady: false
@@ -285,30 +284,18 @@
     elements.mapLink.href = product.link;
     elements.mapLink.textContent = product.linkLabel;
     elements.mapError.hidden = true;
-    elements.mapContainer.hidden = !isRadar;
-    elements.mapImage.hidden = isRadar;
-    elements.imageZoom.hidden = isRadar;
-    elements.mapFrame.classList.toggle("is-zoomed-out", !isRadar && state.zoomedOut);
+    elements.mapLoading.querySelector("span").textContent = isRadar ? "Loading interactive NOAA radar…" : "Loading interactive NOAA satellite imagery…";
+    elements.mapLoading.classList.toggle("is-ready", state.mapReady);
 
-    if (isRadar) {
-      elements.mapLoading.querySelector("span").textContent = "Loading interactive NOAA radar…";
-      elements.mapLoading.classList.toggle("is-ready", state.mapReady);
-      if (state.mapReady && state.map) window.requestAnimationFrame(function () { state.map.resize(); });
-      if (forceRefresh && state.map && state.map.getSource("noaa-radar")) {
-        var refreshed = NOAA_RADAR_WMS + "&refresh=" + Date.now();
-        state.map.getSource("noaa-radar").setTiles([refreshed]);
-      }
-      return;
+    if (!state.mapReady || !state.map) return;
+    state.map.setLayoutProperty("weather-radar", "visibility", isRadar ? "visible" : "none");
+    state.map.setLayoutProperty("weather-satellite", "visibility", isRadar ? "none" : "visible");
+    if (forceRefresh && isRadar && state.map.getSource("noaa-radar")) {
+      state.map.getSource("noaa-radar").setTiles([NOAA_RADAR_WMS + "&refresh=" + Date.now()]);
     }
-
-    var imageSource = product.src;
-    if (forceRefresh) imageSource += (imageSource.indexOf("?") === -1 ? "?" : "&") + "refresh=" + Date.now();
-    elements.mapFrame.style.setProperty("--weather-frame-image", 'url("' + imageSource + '")');
-    elements.mapImage.alt = product.alt;
-    elements.mapLoading.querySelector("span").textContent = "Loading official NOAA satellite imagery…";
-    elements.mapLoading.classList.remove("is-ready");
-    if (elements.mapImage.getAttribute("src") !== imageSource) elements.mapImage.src = imageSource;
-    if (elements.mapImage.complete && elements.mapImage.naturalWidth > 0) elements.mapLoading.classList.add("is-ready");
+    if (forceRefresh && !isRadar && state.map.getSource("noaa-satellite") && typeof state.map.getSource("noaa-satellite").updateImage === "function") {
+      state.map.getSource("noaa-satellite").updateImage({ url: NOAA_SATELLITE_IMAGE + "?refresh=" + Date.now(), coordinates: NOAA_SATELLITE_COORDINATES });
+    }
   }
 
   function initializeRadarMap() {
@@ -333,8 +320,13 @@
           "noaa-radar": {
             type: "raster",
             tiles: [NOAA_RADAR_WMS],
-            tileSize: 256,
+            tileSize: 512,
             attribution: "NOAA / National Weather Service"
+          },
+          "noaa-satellite": {
+            type: "image",
+            url: NOAA_SATELLITE_IMAGE,
+            coordinates: NOAA_SATELLITE_COORDINATES
           }
         },
         layers: [
@@ -355,15 +347,22 @@
             id: "weather-radar",
             type: "raster",
             source: "noaa-radar",
-            paint: { "raster-opacity": .92, "raster-fade-duration": 180 }
+            paint: { "raster-opacity": .86, "raster-fade-duration": 180, "raster-resampling": "linear" }
+          },
+          {
+            id: "weather-satellite",
+            type: "raster",
+            source: "noaa-satellite",
+            layout: { "visibility": "none" },
+            paint: { "raster-opacity": 1, "raster-resampling": "linear" }
           }
         ]
       },
       center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
-      zoom: 9.8,
-      minZoom: 7,
+      zoom: 9.75,
+      minZoom: 6,
       maxZoom: 16,
-      maxBounds: [[-70.5, 15.5], [-62.5, 21.5]],
+      maxBounds: [[-74.5, 9.5], [-57.5, 26]],
       dragRotate: false,
       touchPitch: false,
       pitchWithRotate: false,
@@ -387,14 +386,6 @@
   }
 
   function initializeWeatherFrame() {
-    elements.mapImage.addEventListener("load", function () {
-      elements.mapLoading.classList.add("is-ready");
-      elements.mapError.hidden = true;
-    });
-    elements.mapImage.addEventListener("error", function () {
-      elements.mapLoading.classList.add("is-ready");
-      elements.mapError.hidden = false;
-    });
     renderMapLayer();
   }
 
@@ -406,13 +397,13 @@
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
     renderMapLayer();
-  }
-
-  function setImageZoom(zoomedOut) {
-    state.zoomedOut = Boolean(zoomedOut);
-    elements.mapFrame.classList.toggle("is-zoomed-out", state.zoomedOut);
-    elements.zoomOut.disabled = state.zoomedOut;
-    elements.zoomIn.disabled = !state.zoomedOut;
+    if (state.mapReady && state.map) {
+      state.map.easeTo({
+        center: [CASA_BRISA.longitude, CASA_BRISA.latitude],
+        zoom: layer === "radar" ? 9.75 : 7.15,
+        duration: 650
+      });
+    }
   }
 
   function showToast(message) {
@@ -509,15 +500,11 @@
     elements.coastOutlook = byId("coast-outlook");
     elements.mapFrame = byId("noaa-weather-frame");
     elements.mapContainer = byId("local-weather-map");
-    elements.mapImage = byId("noaa-weather-image");
     elements.mapSource = byId("weather-map-source");
     elements.mapCaption = byId("weather-map-caption");
     elements.mapLink = byId("weather-map-link");
     elements.mapLoading = byId("weather-map-loading");
     elements.mapError = byId("weather-map-error");
-    elements.zoomIn = byId("weather-zoom-in");
-    elements.zoomOut = byId("weather-zoom-out");
-    elements.imageZoom = byId("weather-image-zoom");
     elements.layerButtons = Array.prototype.slice.call(document.querySelectorAll(".weather-layer-tabs button[data-layer]"));
     elements.updated = byId("weather-updated");
     elements.toast = byId("weather-toast");
@@ -526,8 +513,6 @@
   function bindEvents() {
     elements.refresh.addEventListener("click", function () { loadWeather(); renderMapLayer(true); });
     byId("copy-weather-note").addEventListener("click", copyGuestUpdate);
-    elements.zoomIn.addEventListener("click", function () { setImageZoom(false); });
-    elements.zoomOut.addEventListener("click", function () { setImageZoom(true); });
     elements.layerButtons.forEach(function (button) { button.addEventListener("click", function () { setLayer(button.dataset.layer); }); });
   }
 
