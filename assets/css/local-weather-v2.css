@@ -371,6 +371,14 @@
 .weather-official-frame[data-layer="satellite"] { background: #07101a; }
 .weather-official-frame > #local-weather-map { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; }
 .weather-official-frame > #local-weather-map[hidden] { display: none; }
+.weather-radar-overlay { position: absolute; z-index: 2; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; opacity: .7; filter: blur(4px) saturate(.92) contrast(.96); transform: scale(1.014); transition: opacity .2s ease; }
+.weather-radar-overlay[hidden] { display: none; }
+.weather-radar-overlay.is-loading, .weather-radar-overlay.is-moving { opacity: .16; }
+#local-weather-map .maplibregl-marker { z-index: 3; }
+#local-weather-map .maplibregl-ctrl-top-left,
+#local-weather-map .maplibregl-ctrl-top-right,
+#local-weather-map .maplibregl-ctrl-bottom-left,
+#local-weather-map .maplibregl-ctrl-bottom-right { z-index: 4; }
 .weather-map-source,
 .weather-frame-location { position: absolute; z-index: 4; top: 14px; border: 1px solid rgba(6,26,54,.08); border-radius: 10px; background: rgba(255,255,255,.95); box-shadow: 0 8px 24px rgba(6,26,54,.12); }
 .weather-map-source { left: 14px; display: flex; align-items: center; gap: 8px; padding: 11px 13px; color: #607087; font-size: 11px; font-weight: 800; }

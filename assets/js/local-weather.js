@@ -5,12 +5,12 @@
   var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=18.3185&longitude=-67.2455&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wave_direction_dominant,wave_period_max,swell_wave_height_max,swell_wave_direction_dominant,swell_wave_period_max&length_unit=imperial&temperature_unit=fahrenheit&timezone=America%2FPuerto_Rico&forecast_days=8";
   var ALERTS_URL = "https://api.weather.gov/alerts/active?point=18.3185,-67.2455";
   var CASA_BRISA = { latitude: 18.3185, longitude: -67.2455 };
-  var NOAA_RADAR_WMS = "https://opengeo.ncep.noaa.gov/geoserver/carib/carib_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=carib_bref_qcd&STYLES=radar_reflectivity&SRS=EPSG:3857&WIDTH=1024&HEIGHT=1024&BBOX={bbox-epsg-3857}";
+  var NOAA_RADAR_WMS = "https://opengeo.ncep.noaa.gov/geoserver/carib/carib_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=carib_bref_qcd&STYLES=radar_reflectivity&SRS=EPSG:4326";
   var NOAA_SATELLITE_IMAGE = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/pr/GEOCOLOR/2400x2400.jpg";
   var NOAA_SATELLITE_COORDINATES = [[-73.2, 25.2], [-58.5, 25.2], [-58.5, 10.5], [-73.2, 10.5]];
   var NOAA_PRODUCTS = {
     radar: {
-      source: "NOAA / NWS · quality-controlled Caribbean radar",
+      source: "NOAA / NWS · smoothed Caribbean radar",
       caption: "Official NOAA/NWS quality-controlled radar · interactive Rincón view",
       link: "https://radar.weather.gov/",
       linkLabel: "Open full NOAA radar ↗"
@@ -289,14 +289,25 @@
     elements.mapLoading.classList.toggle("is-ready", state.mapReady);
 
     if (!state.mapReady || !state.map) return;
-    state.map.setLayoutProperty("weather-radar", "visibility", isRadar ? "visible" : "none");
     state.map.setLayoutProperty("weather-satellite", "visibility", isRadar ? "none" : "visible");
-    if (forceRefresh && isRadar && state.map.getSource("noaa-radar")) {
-      state.map.getSource("noaa-radar").setTiles([NOAA_RADAR_WMS + "&refresh=" + Date.now()]);
-    }
+    elements.radarOverlay.hidden = !isRadar;
+    if (isRadar) updateRadarOverlay(Boolean(forceRefresh));
     if (forceRefresh && !isRadar && state.map.getSource("noaa-satellite") && typeof state.map.getSource("noaa-satellite").updateImage === "function") {
       state.map.getSource("noaa-satellite").updateImage({ url: NOAA_SATELLITE_IMAGE + "?refresh=" + Date.now(), coordinates: NOAA_SATELLITE_COORDINATES });
     }
+  }
+
+  function updateRadarOverlay(forceRefresh) {
+    if (!state.mapReady || !state.map || state.activeLayer !== "radar" || !elements.radarOverlay) return;
+    var bounds = state.map.getBounds();
+    var width = Math.min(1800, Math.max(1000, Math.round(elements.mapContainer.clientWidth * 1.45)));
+    var height = Math.min(1200, Math.max(700, Math.round(elements.mapContainer.clientHeight * 1.45)));
+    var bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(",");
+    var requestKey = [width, height, bbox].join("|");
+    if (!forceRefresh && elements.radarOverlay.dataset.requestKey === requestKey) return;
+    elements.radarOverlay.dataset.requestKey = requestKey;
+    elements.radarOverlay.classList.add("is-loading");
+    elements.radarOverlay.src = NOAA_RADAR_WMS + "&WIDTH=" + width + "&HEIGHT=" + height + "&BBOX=" + bbox + "&refresh=" + Date.now();
   }
 
   function initializeRadarMap() {
@@ -318,12 +329,6 @@
             maxzoom: 19,
             attribution: "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>"
           },
-          "noaa-radar": {
-            type: "raster",
-            tiles: [NOAA_RADAR_WMS],
-            tileSize: 512,
-            attribution: "NOAA / National Weather Service"
-          },
           "noaa-satellite": {
             type: "image",
             url: NOAA_SATELLITE_IMAGE,
@@ -343,12 +348,6 @@
               "raster-brightness-max": .97,
               "raster-opacity": .86
             }
-          },
-          {
-            id: "weather-radar",
-            type: "raster",
-            source: "noaa-radar",
-            paint: { "raster-opacity": .64, "raster-fade-duration": 180, "raster-resampling": "linear" }
           },
           {
             id: "weather-satellite",
@@ -373,6 +372,13 @@
     if (state.map.touchZoomRotate && typeof state.map.touchZoomRotate.disableRotation === "function") state.map.touchZoomRotate.disableRotation();
     state.map.addControl(new window.maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     state.map.addControl(new window.maplibregl.AttributionControl({ compact: true }), "bottom-left");
+    elements.radarOverlay = document.createElement("img");
+    elements.radarOverlay.className = "weather-radar-overlay";
+    elements.radarOverlay.alt = "";
+    elements.radarOverlay.setAttribute("aria-hidden", "true");
+    elements.radarOverlay.addEventListener("load", function () { elements.radarOverlay.classList.remove("is-loading", "is-moving"); });
+    elements.radarOverlay.addEventListener("error", function () { elements.radarOverlay.classList.remove("is-loading"); });
+    elements.mapContainer.appendChild(elements.radarOverlay);
     state.map.on("load", function () {
       var marker = document.createElement("div");
       marker.className = "weather-host-map-marker";
@@ -381,6 +387,10 @@
       state.mapReady = true;
       renderMapLayer();
     });
+    state.map.on("movestart", function () {
+      if (state.activeLayer === "radar" && elements.radarOverlay) elements.radarOverlay.classList.add("is-moving");
+    });
+    state.map.on("moveend", function () { updateRadarOverlay(false); });
     state.map.on("error", function (event) {
       if (event && event.error) console.warn("NOAA weather map tile error", event.error.message);
     });
